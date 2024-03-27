@@ -31,7 +31,7 @@ export default function UserLoginScreen({ navigation }) {
           <Text style={styles.subtitleText}>Kayıt Ol</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity activeOpacity={0.8} onPress={()=> navigation.navigate("forgotPassword")}>
           <Text style={styles.subtitleText}>Şifremi unuttum</Text>
         </TouchableOpacity>
       </View>
