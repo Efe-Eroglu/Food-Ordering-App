@@ -1,36 +1,21 @@
 import {
+  TextInput,
+  TouchableOpacity,
   StyleSheet,
   Text,
   View,
-  TextInput,
-  TouchableOpacity,
-  Button,
 } from "react-native";
 import React from "react";
 
-export default function RegisterScreen({ navigation }) {
+export default function UserLoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Kayıt Ol</Text>
+      <Text style={styles.title}>Hoşgeldiniz</Text>
       <TextInput
         style={styles.input}
         autoCapitalize="sentences"
         autoCorrect={false}
-        placeholder="İsim"
-        placeholderTextColor={"black"}
-      />
-      <TextInput
-        style={styles.input}
-        autoCapitalize="sentences"
-        autoCorrect={false}
-        placeholder="Soyisim"
-        placeholderTextColor={"black"}
-      />
-      <TextInput
-        style={styles.input}
-        autoCapitalize="sentences"
-        autoCorrect={false}
-        placeholder="E-Posta"
+        placeholder="Kullanıcı Adı"
         placeholderTextColor={"black"}
       />
       <TextInput
@@ -40,35 +25,38 @@ export default function RegisterScreen({ navigation }) {
         placeholder="Şifre"
         placeholderTextColor={"black"}
       />
+
       <View style={styles.subtitle}>
-          <Text style={styles.subtitleText}>Hesabını var mı?</Text>
-        <TouchableOpacity activeOpacity={0.7} onPress={()=> navigation.navigate("login")}>
-          <Text style={styles.subtitleText}>Giriş Yap</Text>
+        <TouchableOpacity activeOpacity={0.8} onPress={()=>navigation.navigate("register")}>
+          <Text style={styles.subtitleText}>Kayıt Ol</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity>
+          <Text style={styles.subtitleText}>Şifremi unuttum</Text>
         </TouchableOpacity>
       </View>
-
 
       <TouchableOpacity
         activeOpacity={0.8}
         style={styles.button}
         onPress={() => navigation.navigate("home")}
       >
-        <Text style={styles.buttonText}>Kayıt Ol</Text>
+        <Text style={styles.buttonText}>Giriş Yap</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  title: {
+    fontSize: 32,
+    marginBottom: 50,
+  },
   container: {
     backgroundColor: "white",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  title: {
-    fontSize: 32,
-    marginBottom:"10%"
   },
   input: {
     borderColor: "black",
@@ -95,7 +83,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     paddingTop: 5,
-    width: "74 %",
+    width: "74%",
     justifyContent: "space-between",
     flexDirection: "row",
   },
