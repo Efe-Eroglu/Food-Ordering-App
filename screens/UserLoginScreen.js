@@ -6,9 +6,34 @@ import {
   View,
 } from "react-native";
 import { useFonts } from "expo-font";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { auth } from "../firebase";
 
-export default function UserLoginScreen({ navigation }) {
+export default function UserLoginScreen() {
+  const navigation = useNavigation();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        navigation.navigate("home");
+      }
+    });
+  }, []);
+
+  const handleLogin = () => {
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredentials) => {
+        const user = userCredentials.user;
+        console.log("Kullanıcı giriş yaptı", user.email);
+      })
+      .catch((error) => alert(error.message));
+  };
+
   const [fontsLoaded, fontError] = useFonts({
     Medium: require("../assets/fonts/Caveat-Medium.ttf"),
     SemiBold: require("../assets/fonts/Caveat-SemiBold.ttf"),
@@ -34,6 +59,7 @@ export default function UserLoginScreen({ navigation }) {
         autoCorrect={false}
         placeholder="Kullanıcı Adı"
         placeholderTextColor={"black"}
+        onChangeText={(text) => setEmail(text)}
       />
       <TextInput
         style={styles.input}
@@ -41,6 +67,8 @@ export default function UserLoginScreen({ navigation }) {
         autoCorrect={false}
         placeholder="Şifre"
         placeholderTextColor={"black"}
+        secureTextEntry
+        onChangeText={(text) => setPassword(text)}
       />
 
       <View style={styles.subtitle}>
@@ -62,7 +90,7 @@ export default function UserLoginScreen({ navigation }) {
       <TouchableOpacity
         activeOpacity={0.8}
         style={styles.button}
-        onPress={() => navigation.navigate("home")}
+        onPress={handleLogin}
       >
         <Text style={styles.buttonText}>Giriş Yap</Text>
       </TouchableOpacity>
@@ -101,7 +129,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     textAlign: "center",
-    fontFamily:"Roboto"
+    fontFamily: "Roboto",
   },
   subtitle: {
     paddingTop: 5,
@@ -112,6 +140,6 @@ const styles = StyleSheet.create({
   },
   subtitleText: {
     fontSize: 12,
-    fontFamily:"Roboto"
+    fontFamily: "Roboto",
   },
 });

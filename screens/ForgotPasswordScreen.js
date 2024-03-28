@@ -38,21 +38,20 @@ const styles = StyleSheet.create({
     
   },
   input: {
-    borderColor: "black",
-    borderWidth: 1,
-    padding: 10,
+    padding: 15,
     borderRadius: 10,
     width: 300,
-    marginTop: 20,
+    marginTop:10,
     backgroundColor: "rgba(255,0,0,0.1)",
   },
   title: {
-    marginRight: 100,
-    fontSize:20
+    alignSelf:"flex-start",
+    marginLeft:45,
+    fontSize:17
   },
   button: {
     backgroundColor: "darkred",
-    padding: 10,
+    padding: 15,
     borderRadius: 15,
     marginTop: 10,
     width: 200,
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 18,
+    fontSize: 15,
     textAlign: "center",
   },
 });
