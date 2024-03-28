@@ -10,7 +10,7 @@ import React from "react";
 export default function ForgotPasswordScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mail Adresinizi giriniz</Text>
+      <Text style={styles.title}>Mail Adresinizi giriniz :</Text>
       <TextInput
         style={styles.input}
         autoCapitalize="sentences"
@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    
   },
   input: {
     borderColor: "black",
