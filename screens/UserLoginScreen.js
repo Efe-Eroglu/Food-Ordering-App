@@ -4,6 +4,8 @@ import {
   StyleSheet,
   Text,
   View,
+  StatusBar,
+  Platform
 } from "react-native";
 import { useFonts } from "expo-font";
 import { useCallback, useEffect, useState } from "react";
@@ -11,6 +13,10 @@ import { useNavigation } from "@react-navigation/native";
 import { auth } from "../firebase";
 
 export default function UserLoginScreen() {
+  
+  StatusBar.setBackgroundColor("#fff");
+  StatusBar.setBarStyle("dark-content")
+
   const navigation = useNavigation();
 
   const [email, setEmail] = useState("");

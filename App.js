@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, StatusBar, Platform} from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import RegisterScreen from "./screens/RegisterScreen";
@@ -11,6 +11,12 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
+      <StatusBar
+        backgroundColor="#ad3103"
+        barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
+        hidden={false}
+        translucent={false}
+      />
       <Stack.Navigator>
         <Stack.Screen
           name="login"

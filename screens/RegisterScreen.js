@@ -5,6 +5,8 @@ import {
   TextInput,
   TouchableOpacity,
   Button,
+  StatusBar,
+  Platform
 } from "react-native";
 import { useFonts } from "expo-font";
 import React, { useCallback, useEffect, useState } from "react";
@@ -13,6 +15,9 @@ import { auth } from "../firebase";
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
+
+  StatusBar.setBackgroundColor("#fff");
+  StatusBar.setBarStyle("dark-content")
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
