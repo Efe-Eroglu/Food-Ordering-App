@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, StatusBar, Platform} from "react-native";
+import { StyleSheet, Text, View, StatusBar, Platform } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import RegisterScreen from "./screens/RegisterScreen";
 import UserLoginScreen from "./screens/UserLoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
+import Cart from "./components/Cart";
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +39,12 @@ export default function App() {
         <Stack.Screen
           name="forgotPassword"
           component={ForgotPasswordScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="cart"
+          component={Cart}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

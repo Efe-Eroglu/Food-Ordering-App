@@ -3,8 +3,12 @@ import React, { useCallback } from "react";
 import { useFonts } from "expo-font";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import SearchBar from "./SearchBar";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Bar() {
+
+  const navigation = useNavigation();
+
   const [fontsLoaded, fontError] = useFonts({
     Medium: require("../assets/fonts/Caveat-Medium.ttf"),
     SemiBold: require("../assets/fonts/Caveat-SemiBold.ttf"),
@@ -28,14 +32,18 @@ export default function Bar() {
           <Text style={styles.addresTitle}>Ataşehir mahallesi</Text>
           <Text style={styles.addresContent}>Elazığ Merkez Elazığ 23100</Text>
         </View>
+
         <TouchableOpacity 
-        activeOpacity={0.6}>
+        activeOpacity={0.6}
+        onPress={()=>navigation.navigate("cart")}
+        >
           <MaterialCommunityIcons
             name="shopping-outline"
             size={24}
             color="#fff"
           />
         </TouchableOpacity>
+      
       </View>
       <View>
         <SearchBar />
