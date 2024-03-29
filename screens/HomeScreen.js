@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, StatusBar, Platform } from 'react-native'
 import React from 'react'
+import Bar from '../components/Bar';
 
 export default function HomeScreen() {
   StatusBar.setBackgroundColor("#ad3103");
@@ -7,6 +8,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <Bar />
       <Text>Ana sayfa ekranı</Text>
     </View>
   )
@@ -14,8 +16,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container:{
-    flex:1,
-    alignItems:"center",
-    justifyContent:"center"
+    backgroundColor: "#fff",
+    flex: 1,
   }
 })
