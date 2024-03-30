@@ -13,6 +13,5 @@ export default function Restaurants() {
 const styles = StyleSheet.create({
     container:{
         flex:4,
-        backgroundColor:"aqua"
     }
 })
