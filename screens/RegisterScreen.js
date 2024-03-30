@@ -15,9 +15,11 @@ import { auth } from "../firebase";
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
+  useEffect(() => {
+    StatusBar.setBackgroundColor("#fff");
+    StatusBar.setBarStyle("dark-content");
+  }, []);
 
-  StatusBar.setBackgroundColor("#fff");
-  StatusBar.setBarStyle("dark-content")
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

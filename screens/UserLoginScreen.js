@@ -5,7 +5,7 @@ import {
   Text,
   View,
   StatusBar,
-  Platform
+  Platform, 
 } from "react-native";
 import { useFonts } from "expo-font";
 import { useCallback, useEffect, useState } from "react";
@@ -14,8 +14,10 @@ import { auth } from "../firebase";
 
 export default function UserLoginScreen() {
   
-  StatusBar.setBackgroundColor("#fff");
-  StatusBar.setBarStyle("dark-content")
+  useEffect(() => {
+    StatusBar.setBackgroundColor("#fff");
+    StatusBar.setBarStyle("dark-content");
+  }, []);
 
   const navigation = useNavigation();
 
