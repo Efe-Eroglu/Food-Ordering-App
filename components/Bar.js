@@ -1,12 +1,13 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useFonts } from "expo-font";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import SearchBar from "./SearchBar";
 import { useNavigation } from "@react-navigation/native";
+import { Octicons } from "@expo/vector-icons";
+import { auth } from "../firebase";
 
 export default function Bar() {
-
   const navigation = useNavigation();
 
   const [fontsLoaded, fontError] = useFonts({
@@ -25,17 +26,36 @@ export default function Bar() {
     return null;
   }
 
+
+  const handleSingOut = () =>{
+    auth.signOut().then(()=>{
+      navigation.navigate("login")
+    }).catch(error=>alert(error.message))
+  }
+
+  // const [visibleQuit, setVisibleQuit] = useState(false);
+  // Pop up haline getirilecek
+
   return (
     <View style={styles.container}>
       <View style={styles.addresContainer}>
-        <View>
-          <Text style={styles.addresTitle}>Ataşehir mahallesi</Text>
-          <Text style={styles.addresContent}>Elazığ Merkez Elazığ 23100</Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity
+            activeOpacity={0.6}
+            onPress={handleSingOut}
+          >
+            <Octicons name="sign-out" size={24} color="white" />
+          </TouchableOpacity>
+
+          <View style={{ marginLeft: 18 }}>
+            <Text style={styles.addresTitle}>Ataşehir mahallesi</Text>
+            <Text style={styles.addresContent}>Elazığ Merkez Elazığ 23100</Text>
+          </View>
         </View>
 
-        <TouchableOpacity 
-        activeOpacity={0.6}
-        onPress={()=>navigation.navigate("cart")}
+        <TouchableOpacity
+          activeOpacity={0.6}
+          onPress={() => navigation.navigate("cart")}
         >
           <MaterialCommunityIcons
             name="shopping-outline"
@@ -43,8 +63,8 @@ export default function Bar() {
             color="#fff"
           />
         </TouchableOpacity>
-      
       </View>
+
       <View>
         <SearchBar />
       </View>

@@ -63,19 +63,20 @@ export default function UserLoginScreen() {
       <Text style={styles.title}>Hoşgeldiniz</Text>
       <TextInput
         style={styles.input}
-        autoCapitalize="sentences"
         autoCorrect={false}
         placeholder="Kullanıcı Adı"
         placeholderTextColor={"black"}
         onChangeText={(text) => setEmail(text)}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
-        autoCapitalize="sentences"
         autoCorrect={false}
         placeholder="Şifre"
         placeholderTextColor={"black"}
         secureTextEntry
+        autoCapitalize="none"
         onChangeText={(text) => setPassword(text)}
       />
 
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 18,
+    fontSize: 16,
     textAlign: "center",
     fontFamily: "Roboto",
   },

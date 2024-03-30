@@ -5,7 +5,8 @@ import RegisterScreen from "./screens/RegisterScreen";
 import UserLoginScreen from "./screens/UserLoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
-import Cart from "./components/Cart";
+import CartScreen from "./screens/CartScreen";
+import SingoutPop from "./components/SingoutPop";
 
 const Stack = createNativeStackNavigator();
 
@@ -13,8 +14,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <StatusBar
-        backgroundColor="#ad3103"
-        barStyle={Platform.OS === "ios" ? "dark-content" : "light-content"}
+        backgroundColor="#fff"
+        barStyle={Platform.OS === "ios" ? "dark-content" : "dark-content"}
         hidden={false}
         translucent={false}
       />
@@ -44,7 +45,13 @@ export default function App() {
 
         <Stack.Screen
           name="cart"
-          component={Cart}
+          component={CartScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="carousel"
+          component={SingoutPop}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

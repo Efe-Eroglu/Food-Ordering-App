@@ -2,7 +2,6 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import React from "react";
 import { MaterialIcons } from '@expo/vector-icons';
 
-
 export default function SearchBar() {
   return (
     <View style={styles.backgroundStyle}>
