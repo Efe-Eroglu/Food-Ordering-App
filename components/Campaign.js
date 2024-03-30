@@ -6,8 +6,10 @@ export default function Campaign() {
     <View style={styles.container}>
       <TouchableOpacity style={styles.box1} activeOpacity={0.7}>
         <View style={styles.textContainer}>
-          <Text style={styles.campaignTitle}>Gel Al</Text>
-          <Text style={styles.campaignsubTitleRightBox}>Özel indirimleri kaçırma</Text>
+          <Text style={styles.campaignTitle}>Favoriler</Text>
+          <Text style={styles.campaignsubTitleRightBox}>
+            En çok tercih edilenler
+          </Text>
         </View>
         <View style={styles.imageContainerRight}>
           <Image
@@ -19,20 +21,30 @@ export default function Campaign() {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.box2} activeOpacity={0.7}>
+        <View style={styles.textContainer}>
+          <Text style={styles.campaignTitle}>Gel Al</Text>
+          <Text style={styles.campaignsubTitleLeftBox}> Özel indirimleri kaçırma</Text>
+        </View>
         <View style={styles.imageContainerLeft}>
-          <View style={styles.textContainerLeftBoxes}>
-            <Text style={styles.campaignTitle}>Gel Al</Text>
-            <Text style={styles.campaignsubTitleLeftBox}>Sana Özel</Text>
-          </View>
+          <Image
+            source={require("../assets/box2.png")}
+            resizeMode="cover"
+            style={styles.image}
+          />
         </View>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.box2} activeOpacity={0.7}>
+        <View style={styles.textContainer}>
+          <Text style={styles.campaignTitle}>Sana Özel</Text>
+          <Text style={styles.campaignsubTitleLeftBox}>Sana Özel</Text>
+        </View>
         <View style={styles.imageContainerLeft}>
-          <View style={styles.textContainerLeftBoxes}>
-            <Text style={styles.campaignTitle}>Sana Özel</Text>
-            <Text style={styles.campaignsubTitleLeftBox}>Sana Özel</Text>
-          </View>
+        <Image
+            source={require("../assets/box3.png")}
+            resizeMode="cover"
+            style={styles.image}
+          />
         </View>
       </TouchableOpacity>
     </View>
@@ -70,7 +82,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   imageContainerRight: {
-    marginTop:100,
+    marginTop: 100,
     width: "100%",
     height: "100%",
     alignItems: "center",
@@ -81,25 +93,25 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   textContainer: {
-    position:"absolute",
+    position: "absolute",
     alignSelf: "flex-start",
-    zIndex:1,
-    top:20,
-    left:10,
+    zIndex: 1,
+    top: 20,
+    left: 10,
   },
   campaignTitle: {
     fontSize: 20,
     fontWeight: "bold",
   },
-  textContainerLeftBoxes:{
-    position:"absolute",
-    top:0,
-    left:0
+  imageContainerLeft: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft:100,
+    marginTop:61
   },
-  imageContainerLeft:{
-
+  campaignsubTitleRightBox: {
+    maxWidth: "99%",
   },
-  campaignsubTitleRightBox:{
-    maxWidth:"99%",
-  }
 });
