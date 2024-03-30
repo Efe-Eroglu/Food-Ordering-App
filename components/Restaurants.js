@@ -1,10 +1,27 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useCallback } from 'react'
 import RestaurantList from './RestaurantList'
+import { useFonts } from 'expo-font';
 
 export default function Restaurants() {
+
+  const [fontsLoaded, fontError] = useFonts({
+    denme: require("../assets/fonts/Quicksand-Light.ttf"),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded || fontError) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Popüler Restoranlar</Text>
       <RestaurantList />
     </View>
   )
@@ -12,7 +29,14 @@ export default function Restaurants() {
 
 const styles = StyleSheet.create({
     container:{
-      backgroundColor:"#efefef",
+      backgroundColor:"#fff",
         flex:4,
+    },
+    title:{
+      fontSize:20,
+      fontWeight:"bold",
+      marginHorizontal:15,
+      marginTop:10,
+      fontFamily:"denme"
     }
 })

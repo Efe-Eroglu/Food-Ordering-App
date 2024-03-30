@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Platform
 } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import restaurants_data from "../data/restaurants_data";
@@ -55,10 +56,11 @@ const styles = StyleSheet.create({
   restaurant: {
     width: 300,
     height: 200,
-    marginVertical: 30,
+    marginTop:10,
     marginHorizontal: 10,
     borderRadius: 10,
     overflow: "hidden",
+    elevation:20
   },
   subtitleArea: {
     position: "absolute",

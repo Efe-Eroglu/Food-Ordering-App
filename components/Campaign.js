@@ -30,7 +30,7 @@ export default function Campaign() {
 const styles = StyleSheet.create({
   container: {
     flex: 6,
-    backgroundColor: "#efef61",
+    backgroundColor: "silver",
   },
   box1:{
     position:"absolute",
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     top:20,
     width:"40%",
     height:"90%",
-    backgroundColor:"red",
+    backgroundColor:"#fff",
     borderRadius:20,
     alignItems:"center",
     justifyContent:"center"
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   box2:{
     width:"45%",
     height:"40%",
-    backgroundColor:"lime",
+    backgroundColor:"#fff",
     marginVertical:20,
     marginHorizontal:20,
     borderRadius:20,
