@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     borderRadius: 10,
     overflow: "hidden",
-    elevation:20
+    elevation:10
   },
   subtitleArea: {
     position: "absolute",
