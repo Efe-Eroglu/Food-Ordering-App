@@ -12,6 +12,7 @@ import Bar from "../components/Bar";
 import { Entypo } from "@expo/vector-icons";
 import restaurants_data from "../data/restaurants_data";
 import { FontAwesome } from '@expo/vector-icons';
+import FilterBar from "../components/FilterBar";
 
 const renderItem = ({ item }) => (
   <View>
@@ -41,7 +42,7 @@ export default function Restoranlar() {
     <View style={{ width: "100%", height: "100%" }}>
       <Bar />
       <View style={styles.container}>
-        <Text style={styles.title}>Tüm Restoranlar</Text>
+        <FilterBar />
         <FlatList
           data={restaurants_data}
           renderItem={renderItem}
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 10,
     backgroundColor: "#fff",
-    marginVertical: 10,
+    marginBottom: 15,
     flexDirection: "row",
     overflow: "hidden",
     elevation: 10,

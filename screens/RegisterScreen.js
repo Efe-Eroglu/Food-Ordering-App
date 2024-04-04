@@ -82,16 +82,17 @@ export default function RegisterScreen() {
       />
       <TextInput
         style={styles.input}
-        autoCapitalize="sentences"
+        autoCapitalize="none"
         autoCorrect={false}
         selectionColor={"#823d0c"}
+        keyboardType="email-address"
         placeholder="E-Posta"
         placeholderTextColor={"black"}
         onChangeText={(text) => setEmail(text)}
       />
       <TextInput
         style={styles.input}
-        autoCapitalize="sentences"
+        autoCapitalize="none"
         autoCorrect={false}
         selectionColor={"#823d0c"}
         placeholder="Şifre"
