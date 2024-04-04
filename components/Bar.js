@@ -1,40 +1,24 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useCallback, useState } from "react";
-import { useFonts } from "expo-font";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Modal,
+  TouchableWithoutFeedback,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import SearchBar from "./SearchBar";
-import { useNavigation } from "@react-navigation/native";
-import { Octicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
+import SingoutPop from "./SingoutPop";
 import { auth } from "../firebase";
+import DetailsMenu from "./DetailsMenu";
 
 export default function Bar() {
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const [fontsLoaded, fontError] = useFonts({
-    Medium: require("../assets/fonts/Caveat-Medium.ttf"),
-    SemiBold: require("../assets/fonts/Caveat-SemiBold.ttf"),
-    Roboto: require("../assets/fonts/Roboto-Bold.ttf"),
-  });
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded || fontError) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, fontError]);
-
-  if (!fontsLoaded && !fontError) {
-    return null;
-  }
-
-
-  const handleSingOut = () =>{
-    auth.signOut().then(()=>{
-      navigation.navigate("login")
-    }).catch(error=>alert(error.message))
-  }
-
-  // const [visibleQuit, setVisibleQuit] = useState(false);
-  // Pop up haline getirilecek
 
   return (
     <View style={styles.container}>
@@ -42,9 +26,9 @@ export default function Bar() {
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TouchableOpacity
             activeOpacity={0.6}
-            onPress={handleSingOut}
+            onPress={() => setModalVisible(true)} // Modal'ı açmak için
           >
-            <Octicons name="sign-out" size={24} color="white" />
+            <Feather name="menu" size={26} color="white" />
           </TouchableOpacity>
 
           <View style={{ marginLeft: 18 }}>
@@ -68,6 +52,23 @@ export default function Bar() {
       <View>
         <SearchBar />
       </View>
+
+      {/* Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+          <View style={styles.modalOverlay} />
+        </TouchableWithoutFeedback>
+        <View style={styles.modalContent}>
+        <DetailsMenu />
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -77,8 +78,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ad3103",
     height: 135,
     flexDirection: "column",
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
   },
   addresContainer: {
     flexDirection: "row",
@@ -87,16 +86,25 @@ const styles = StyleSheet.create({
     marginTop: 23,
     marginHorizontal: 20,
   },
-  title: {
-    margin: 10,
-    fontSize: 36,
-    fontFamily: "Medium",
-  },
   addresTitle: {
     fontWeight: "bold",
     color: "#fff",
   },
   addresContent: {
     color: "#fff",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    position: "absolute",
+    bottom:0,
+    width: "100%",
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
 });

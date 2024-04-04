@@ -10,6 +10,7 @@ import SingoutPop from "./components/SingoutPop";
 import GelAl from "./screens/GelAl";
 import Favoriler from "./screens/Favoriler";
 import Restoranlar from "./screens/Restoranlar";
+import AccountDetailsScreen from "./screens/AccountDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -73,6 +74,11 @@ export default function App() {
         <Stack.Screen
           name="restoranlar"
           component={Restoranlar}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="hesapDetay"
+          component={AccountDetailsScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

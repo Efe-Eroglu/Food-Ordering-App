@@ -1,5 +1,5 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useCallback } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useFonts } from "expo-font";
 
 export default function SingoutPop() {
@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignItems: "center",
     justifyContent: "center",
+    zIndex: 999,
   },
   signOutbuttonText: {
     color: "#fff",

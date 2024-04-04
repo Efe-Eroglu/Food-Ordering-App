@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     elevation: 1,
     borderWidth: 1,
-    borderColor: "silver",
+    borderColor: "rgba(230,230,230,0.2)",
   },
   image: {
     width: "100%",
