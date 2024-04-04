@@ -7,6 +7,9 @@ import HomeScreen from "./screens/HomeScreen";
 import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
 import CartScreen from "./screens/CartScreen";
 import SingoutPop from "./components/SingoutPop";
+import GelAl from "./screens/GelAl";
+import Favoriler from "./screens/Favoriler";
+import SanaOzel from "./screens/SanaOzel";
 
 const Stack = createNativeStackNavigator();
 
@@ -52,6 +55,24 @@ export default function App() {
         <Stack.Screen
           name="carousel"
           component={SingoutPop}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="gelAl"
+          component={GelAl}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="favoriler"
+          component={Favoriler}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="sanaOzel"
+          component={SanaOzel}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

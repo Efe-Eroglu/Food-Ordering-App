@@ -69,6 +69,7 @@ export default function UserLoginScreen() {
         onChangeText={(text) => setEmail(text)}
         keyboardType="email-address"
         autoCapitalize="none"
+        selectionColor={"#823d0c"}
       />
       <TextInput
         style={styles.input}
@@ -76,6 +77,7 @@ export default function UserLoginScreen() {
         placeholder="Şifre"
         placeholderTextColor={"black"}
         secureTextEntry
+        selectionColor={"#823d0c"}
         autoCapitalize="none"
         onChangeText={(text) => setPassword(text)}
       />
@@ -124,10 +126,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 300,
     marginTop: 20,
-    backgroundColor: "rgba(255,0,0,0.1)",
+    backgroundColor: "rgba(222, 105, 22,0.3)",
   },
   button: {
-    backgroundColor: "darkred",
+    backgroundColor: "#ad581c",
     padding: 13,
     borderRadius: 15,
     width: 210,

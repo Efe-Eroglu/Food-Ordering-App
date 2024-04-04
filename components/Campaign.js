@@ -1,10 +1,13 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Campaign() {
+  const navigation = useNavigation();
+  
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.box1} activeOpacity={0.7}>
+      <TouchableOpacity style={styles.box1} activeOpacity={1} onPress={()=>navigation.navigate("favoriler")}>
         <View style={styles.textContainer}>
           <Text style={styles.campaignTitle}>Favoriler</Text>
           <Text style={styles.campaignsubTitleRightBox}>
@@ -20,7 +23,7 @@ export default function Campaign() {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.box2} activeOpacity={0.7}>
+      <TouchableOpacity style={styles.box2} activeOpacity={1} onPress={()=> navigation.navigate("gelAl")}>
         <View style={styles.textContainer}>
           <Text style={styles.campaignTitle}>Gel Al</Text>
           <Text style={styles.campaignsubTitleLeftBox}> Özel indirimleri kaçırma</Text>
@@ -34,7 +37,7 @@ export default function Campaign() {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.box2} activeOpacity={0.7}>
+      <TouchableOpacity style={styles.box2} activeOpacity={1} onPress={()=>navigation.navigate("sanaOzel")}>
         <View style={styles.textContainer}>
           <Text style={styles.campaignTitle}>Sana Özel</Text>
           <Text style={styles.campaignsubTitleLeftBox}>Sana Özel</Text>
