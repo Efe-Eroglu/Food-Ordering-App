@@ -9,7 +9,7 @@ import CartScreen from "./screens/CartScreen";
 import SingoutPop from "./components/SingoutPop";
 import GelAl from "./screens/GelAl";
 import Favoriler from "./screens/Favoriler";
-import SanaOzel from "./screens/SanaOzel";
+import Restoranlar from "./screens/Restoranlar";
 
 const Stack = createNativeStackNavigator();
 
@@ -71,8 +71,8 @@ export default function App() {
         />
 
         <Stack.Screen
-          name="sanaOzel"
-          component={SanaOzel}
+          name="restoranlar"
+          component={Restoranlar}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

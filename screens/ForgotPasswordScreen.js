@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 300,
     marginTop: 10,
-    backgroundColor: "rgba(255,0,0,0.1)",
+    backgroundColor: "rgba(222, 105, 22,0.3)",
   },
   title: {
     alignSelf: "flex-start",
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   button: {
-    backgroundColor: "darkred",
+    backgroundColor: "#ad581c",
     padding: 15,
     borderRadius: 15,
     marginTop: 10,

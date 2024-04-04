@@ -5,21 +5,21 @@ import {
   Text,
   View,
   StatusBar,
-  Platform, 
+  Platform,
 } from "react-native";
 import { useFonts } from "expo-font";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { auth } from "../firebase";
 
+
 export default function UserLoginScreen() {
-  
+  const navigation = useNavigation();
+
   useEffect(() => {
     StatusBar.setBackgroundColor("#fff");
     StatusBar.setBarStyle("dark-content");
   }, []);
-
-  const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Button,
   StatusBar,
-  Platform
+  Platform,
 } from "react-native";
 import { useFonts } from "expo-font";
 import React, { useCallback, useEffect, useState } from "react";
@@ -19,7 +19,6 @@ export default function RegisterScreen() {
     StatusBar.setBackgroundColor("#fff");
     StatusBar.setBarStyle("dark-content");
   }, []);
-
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,7 +42,6 @@ export default function RegisterScreen() {
       })
       .catch((error) => alert(error.message));
   };
-
 
   const [fontsLoaded, fontError] = useFonts({
     Medium: require("../assets/fonts/Caveat-Medium.ttf"),
@@ -69,6 +67,7 @@ export default function RegisterScreen() {
         autoCapitalize="sentences"
         autoCorrect={false}
         placeholder="İsim"
+        selectionColor={"#823d0c"}
         placeholderTextColor={"black"}
         onChangeText={(text) => setName(text)}
       />
@@ -76,6 +75,7 @@ export default function RegisterScreen() {
         style={styles.input}
         autoCapitalize="sentences"
         autoCorrect={false}
+        selectionColor={"#823d0c"}
         placeholder="Soyisim"
         placeholderTextColor={"black"}
         onChangeText={(text) => setSurname(text)}
@@ -84,6 +84,7 @@ export default function RegisterScreen() {
         style={styles.input}
         autoCapitalize="sentences"
         autoCorrect={false}
+        selectionColor={"#823d0c"}
         placeholder="E-Posta"
         placeholderTextColor={"black"}
         onChangeText={(text) => setEmail(text)}
@@ -92,6 +93,7 @@ export default function RegisterScreen() {
         style={styles.input}
         autoCapitalize="sentences"
         autoCorrect={false}
+        selectionColor={"#823d0c"}
         placeholder="Şifre"
         placeholderTextColor={"black"}
         secureTextEntry
@@ -99,9 +101,8 @@ export default function RegisterScreen() {
       />
       <View style={styles.subtitle}>
         <Text style={styles.subtitleText}>Hesabını var mı?</Text>
-        <TouchableOpacity
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity activeOpacity={0.7}
+        onPress={()=>{navigation.navigate("login")}}>
           <Text style={styles.subtitleText}>Giriş Yap</Text>
         </TouchableOpacity>
       </View>
@@ -126,21 +127,21 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 53,
-    width:"100%",
-    textAlign:"center",
+    width: "100%",
+    textAlign: "center",
     marginBottom: "10%",
-    fontFamily:"SemiBold"
+    fontFamily: "SemiBold",
   },
   input: {
     padding: 15,
     borderRadius: 10,
     width: 300,
     marginTop: 20,
-    backgroundColor: "rgba(255,0,0,0.1)",
+    backgroundColor: "rgba(222, 105, 22,0.3)",
   },
   button: {
-    backgroundColor: "darkred",
-    padding: 10,
+    backgroundColor: "#ad581c",
+    padding: 13,
     borderRadius: 15,
     marginTop: 10,
     width: 200,

@@ -4,10 +4,14 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function Campaign() {
   const navigation = useNavigation();
-  
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.box1} activeOpacity={1} onPress={()=>navigation.navigate("favoriler")}>
+      <TouchableOpacity
+        style={styles.box1}
+        activeOpacity={1}
+        onPress={() => navigation.navigate("favoriler")}
+      >
         <View style={styles.textContainer}>
           <Text style={styles.campaignTitle}>Favoriler</Text>
           <Text style={styles.campaignsubTitleRightBox}>
@@ -23,28 +27,39 @@ export default function Campaign() {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.box2} activeOpacity={1} onPress={()=> navigation.navigate("gelAl")}>
+      <TouchableOpacity
+        style={styles.box2}
+        activeOpacity={1}
+        onPress={() => navigation.navigate("restoranlar")}
+      >
         <View style={styles.textContainer}>
-          <Text style={styles.campaignTitle}>Gel Al</Text>
-          <Text style={styles.campaignsubTitleLeftBox}> Özel indirimleri kaçırma</Text>
+          <Text style={styles.campaignTitle}>Restoranlar</Text>
+          <Text style={styles.campaignsubTitleLeftBox}>Özel Lezzetler</Text>
         </View>
         <View style={styles.imageContainerLeft}>
           <Image
-            source={require("../assets/box2.png")}
+            source={require("../assets/box3.png")}
             resizeMode="cover"
             style={styles.image}
           />
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.box2} activeOpacity={1} onPress={()=>navigation.navigate("sanaOzel")}>
+      <TouchableOpacity
+        style={styles.box2}
+        activeOpacity={1}
+        onPress={() => navigation.navigate("gelAl")}
+      >
         <View style={styles.textContainer}>
-          <Text style={styles.campaignTitle}>Sana Özel</Text>
-          <Text style={styles.campaignsubTitleLeftBox}>Sana Özel</Text>
+          <Text style={styles.campaignTitle}>Gel Al</Text>
+          <Text style={styles.campaignsubTitleLeftBox}>
+            {" "}
+            Özel indirimleri kaçırma
+          </Text>
         </View>
         <View style={styles.imageContainerLeft}>
-        <Image
-            source={require("../assets/box3.png")}
+          <Image
+            source={require("../assets/box2.png")}
             resizeMode="cover"
             style={styles.image}
           />
@@ -111,8 +126,8 @@ const styles = StyleSheet.create({
     height: "100%",
     alignItems: "center",
     justifyContent: "center",
-    marginLeft:100,
-    marginTop:61
+    marginLeft: 100,
+    marginTop: 61,
   },
   campaignsubTitleRightBox: {
     maxWidth: "99%",

@@ -25,7 +25,7 @@ export default function RestaurantList() {
             <Entypo name="star" size={18} color="yellow" /> {item.rating}
           </Text>
           <View style={styles.nameContainer}>
-            <Text style={styles.name}>{item.name}</Text>
+            <Text style={styles.name}>{item.name} </Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -33,6 +33,7 @@ export default function RestaurantList() {
   );
 
   const handlePress = (item) => {
+    //Restoran ekranına yönlendirmesi yapılacak !!!
     console.log("Seçilen restoran:", item);
   };
 
