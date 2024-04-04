@@ -44,7 +44,7 @@ export default function Restoranlar() {
   }, []);
 
   return (
-    <View style={{ width: "100%", height: "100%" }}>
+    <View>   
       <Bar />
       <View style={styles.container}>
         <FilterBar />
