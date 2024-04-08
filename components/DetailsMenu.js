@@ -1,10 +1,21 @@
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useEffect } from "react";
 import { auth } from "../firebase";
 import { useNavigation } from "@react-navigation/native";
 
 export default function DetailsMenu() {
   const navigation = useNavigation();
+
+  useEffect(() => {
+    StatusBar.setBackgroundColor("#ad3103");
+    StatusBar.setBarStyle("light-content");
+  }, []);
 
   const handleSignOut = () => {
     auth
@@ -26,7 +37,11 @@ export default function DetailsMenu() {
         <Text style={styles.text}>Hesap Bilgilerim</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.card} activeOpacity={0.7}>
+      <TouchableOpacity
+        style={styles.card}
+        activeOpacity={0.7}
+        onPress={() => navigation.navigate("gecmisSiparis")}
+      >
         <Text style={styles.text}>Geçmiş Siparişlerim</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.card} activeOpacity={0.7}>

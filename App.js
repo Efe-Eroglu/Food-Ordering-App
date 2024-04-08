@@ -11,6 +11,7 @@ import GelAl from "./screens/GelAl";
 import Favoriler from "./screens/Favoriler";
 import Restoranlar from "./screens/Restoranlar";
 import AccountDetailsScreen from "./screens/AccountDetailsScreen";
+import PastOrdersScreen from "./screens/PastOrdersScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -79,6 +80,11 @@ export default function App() {
          <Stack.Screen
           name="hesapDetay"
           component={AccountDetailsScreen}
+          options={{ headerShown: false }}
+        />
+          <Stack.Screen
+          name="gecmisSiparis"
+          component={PastOrdersScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
