@@ -3,7 +3,7 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-export default function PastOrderBar() {
+export default function PastOrderBar({title}) {
   const navigation = useNavigation();
 
   return (
@@ -20,7 +20,7 @@ export default function PastOrderBar() {
 
       <View style={styles.right}>
         <View style={styles.content}>
-          <Text style={styles.title}>Geçmiş Siparişler</Text>
+          <Text style={styles.title}>{title}</Text>
         </View>
       </View>
     </View>

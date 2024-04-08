@@ -50,7 +50,7 @@ export default function PastOrdersScreen() {
   );
   return (
     <View style={styles.outcontainer}>
-      <PastOrderBar />
+      <PastOrderBar title={"Geçmiş Siparişler"} />
 
       <View style={styles.container}>
         <FlatList

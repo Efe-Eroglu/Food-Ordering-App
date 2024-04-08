@@ -44,8 +44,8 @@ export default function DetailsMenu() {
       >
         <Text style={styles.text}>Geçmiş Siparişlerim</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.card} activeOpacity={0.7}>
-        <Text style={styles.text}>Kuponlarım</Text>
+      <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={()=> navigation.navigate("yardim")}>
+        <Text style={styles.text}>Yardım Merkezi</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.card}

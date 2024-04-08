@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import React, { useCallback, useState } from "react";
 import { useFonts } from "expo-font";
+import PastOrderBar from "../components/PastOrderBar";
 
 export default function AccountDetailsScreen() {
   const [email, setEmail] = useState("");
@@ -33,6 +34,7 @@ export default function AccountDetailsScreen() {
 
   return (
     <View style={styles.container}>
+        <PastOrderBar title={"Hesap Detayları"}/>
         <Text style={styles.title}>Hesap Detayları</Text>
         <TextInput
           style={styles.input}
@@ -93,12 +95,11 @@ export default function AccountDetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
   },
   title: {
     fontSize: 48,
-    marginVertical:25,
+    marginVertical:50,
     fontFamily:"Medium"
   },
   input: {
