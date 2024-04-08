@@ -6,12 +6,12 @@ import {
   View,
   Modal,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import SearchBar from "./SearchBar";
 import { Feather } from "@expo/vector-icons";
-import SingoutPop from "./SingoutPop";
 import { auth } from "../firebase";
 import DetailsMenu from "./DetailsMenu";
 
@@ -19,57 +19,60 @@ export default function Bar() {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
 
-
   return (
-    <View style={styles.container}>
-      <View style={styles.addresContainer}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <KeyboardAvoidingView behavior="height">
+      <View style={styles.container}>
+        <View style={styles.addresContainer}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() => setModalVisible(true)} // Modal'ı açmak için
+            >
+              <Feather name="menu" size={26} color="white" />
+            </TouchableOpacity>
+
+            <View style={{ marginLeft: 18 }}>
+              <Text style={styles.addresTitle}>Ataşehir mahallesi</Text>
+              <Text style={styles.addresContent}>
+                Elazığ Merkez Elazığ 23100
+              </Text>
+            </View>
+          </View>
+
           <TouchableOpacity
             activeOpacity={0.6}
-            onPress={() => setModalVisible(true)} // Modal'ı açmak için
+            onPress={() => navigation.navigate("cart")}
           >
-            <Feather name="menu" size={26} color="white" />
+            <MaterialCommunityIcons
+              name="shopping-outline"
+              size={24}
+              color="#fff"
+            />
           </TouchableOpacity>
-
-          <View style={{ marginLeft: 18 }}>
-            <Text style={styles.addresTitle}>Ataşehir mahallesi</Text>
-            <Text style={styles.addresContent}>Elazığ Merkez Elazığ 23100</Text>
-          </View>
         </View>
 
-        <TouchableOpacity
-          activeOpacity={0.6}
-          onPress={() => navigation.navigate("cart")}
+        <View>
+          <SearchBar />
+        </View>
+
+        {/* Modal */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
         >
-          <MaterialCommunityIcons
-            name="shopping-outline"
-            size={24}
-            color="#fff"
-          />
-        </TouchableOpacity>
+          <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+            <View style={styles.modalOverlay} />
+          </TouchableWithoutFeedback>
+          <View style={styles.modalContent}>
+            <DetailsMenu />
+          </View>
+        </Modal>
       </View>
-
-      <View>
-        <SearchBar />
-      </View>
-
-      {/* Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View style={styles.modalOverlay} />
-        </TouchableWithoutFeedback>
-        <View style={styles.modalContent}>
-        <DetailsMenu />
-        </View>
-      </Modal>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -100,7 +103,7 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: "#fff",
     position: "absolute",
-    bottom:0,
+    bottom: 0,
     width: "100%",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
