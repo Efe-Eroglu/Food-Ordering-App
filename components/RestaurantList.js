@@ -6,12 +6,15 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Platform
+  Platform,
 } from "react-native";
 import { Entypo } from "@expo/vector-icons";
-import restaurants_data from "../data/restaurants_data";
+import popular_data from "../data/popular_restaurants_data";
+import { useNavigation } from "@react-navigation/native";
 
 export default function RestaurantList() {
+  const navigation = useNavigation();
+
   const renderItem = ({ item }) => (
     <View>
       <TouchableOpacity
@@ -33,14 +36,16 @@ export default function RestaurantList() {
   );
 
   const handlePress = (item) => {
-    //Restoran ekranına yönlendirmesi yapılacak !!!
-    console.log("Seçilen restoran:", item);
+    // Restoran ekranına yönlendirmesi yapılacak !!!
+    // Item id si gönderilip id ye ait yemekler görüntülenecek
+    // Geçici olarak dummy data ile çalışılacak
+    navigation.navigate("restoranMenu")
   };
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={restaurants_data}
+        data={popular_data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         horizontal={true}
@@ -57,11 +62,11 @@ const styles = StyleSheet.create({
   restaurant: {
     width: 300,
     height: 200,
-    marginTop:10,
+    marginTop: 10,
     marginHorizontal: 10,
     borderRadius: 10,
     overflow: "hidden",
-    elevation:10
+    elevation: 10,
   },
   subtitleArea: {
     position: "absolute",
@@ -82,8 +87,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   nameContainer: {
-    position:"absolute",
-    width:"100%",
+    position: "absolute",
+    width: "100%",
     alignItems: "center",
   },
   name: {

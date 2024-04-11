@@ -13,6 +13,7 @@ import Restoranlar from "./screens/Restoranlar";
 import AccountDetailsScreen from "./screens/AccountDetailsScreen";
 import PastOrdersScreen from "./screens/PastOrdersScreen";
 import HelpScreen from "./screens/HelpScreen";
+import RestaurantMenu from "./screens/RestaurantMenu";
 
 const Stack = createNativeStackNavigator();
 
@@ -91,6 +92,12 @@ export default function App() {
         <Stack.Screen
           name="yardim"
           component={HelpScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="restoranMenu"
+          component={RestaurantMenu}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

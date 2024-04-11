@@ -10,11 +10,11 @@ import {
 import React, { useCallback, useEffect } from "react";
 import Bar from "../components/Bar";
 import { Entypo } from "@expo/vector-icons";
-import restaurants_data from "../data/restaurants_data";
 import { FontAwesome } from "@expo/vector-icons";
 import FilterBar from "../components/FilterBar";
-import { FontAwesome5 } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
+import favourite from "../data/favourite_data";
+
 
 export default function Favoriler() {
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function Favoriler() {
       <View style={styles.container}>
         <FilterBar />
         <FlatList
-          data={restaurants_data}
+          data={favourite}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}

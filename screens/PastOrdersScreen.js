@@ -14,7 +14,8 @@ import { useNavigation } from "@react-navigation/native";
 import PastOrderBar from "../components/PastOrderBar";
 import { Entypo } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
-import restaurants_data from "../data/restaurants_data";
+import past_orders from "../data/past_order_data";
+
 
 export default function PastOrdersScreen() {
   const navigation = useNavigation();
@@ -54,7 +55,7 @@ export default function PastOrdersScreen() {
 
       <View style={styles.container}>
         <FlatList
-          data={restaurants_data}
+          data={past_orders}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
