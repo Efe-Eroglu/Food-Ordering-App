@@ -7,14 +7,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Bar from "../components/Bar";
 import { Entypo } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import FilterBar from "../components/FilterBar";
 import { useFonts } from "expo-font";
 import favourite from "../data/favourite_data";
-
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 export default function Favoriler() {
   useEffect(() => {
@@ -22,12 +23,33 @@ export default function Favoriler() {
     StatusBar.setBarStyle("light-content");
   }, []);
 
+  const [income, setIncome] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "Restoranlar"));
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          const restaurantData = doc.data();
+          if (restaurantData.favori === 1) {
+            data.push(restaurantData);
+          }
+        });
+        setIncome(data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   const renderItem = ({ item }) => (
     <View>
       <TouchableOpacity style={styles.cart} activeOpacity={0.9}>
         <View style={styles.leftSide}>
           <Image
-            source={item.image}
+            source={{ uri: item.image }}
             style={styles.image}
             resizeMode="stretch"
           />
@@ -69,7 +91,7 @@ export default function Favoriler() {
       <View style={styles.container}>
         <FilterBar />
         <FlatList
-          data={favourite}
+          data={income}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}

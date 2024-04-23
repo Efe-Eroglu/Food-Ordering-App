@@ -1,15 +1,8 @@
-import {
-  Button,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Button, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import PastOrderBar from "../components/PastOrderBar";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import email from 'react-native-email';
 
 export default function HelpScreen() {
   useEffect(() => {
@@ -18,8 +11,22 @@ export default function HelpScreen() {
   }, []);
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [emailAddress, setEmailAddress] = useState("");
   const [message, setMessage] = useState("");
+
+  const sendEmail = () => {
+    if (name.length !== 0 && message.length !== 0) {
+      const to = ["foodorderingapp1@example.com"];
+      const options = {
+        subject: name,
+        body: message,
+      };
+
+      email(to, options)
+        .then(() => console.log('Mail gönderildi'))
+        .catch((error) => console.error("Mail gönderme hatası:", error));
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -31,7 +38,7 @@ export default function HelpScreen() {
           fontSize: 18,
           alignSelf: "flex-start",
           marginLeft: 45,
-          marginTop:"25%"
+          marginTop: "25%",
         }}
       >
         İletişim
@@ -60,11 +67,11 @@ export default function HelpScreen() {
         keyboardType="email-address"
         placeholder="E-Posta"
         placeholderTextColor={"black"}
-        onChangeText={(text) => setEmail(text)}
+        onChangeText={(text) => setEmailAddress(text)}
       />
 
       <TextInput
-        style={[styles.input,{height:150}]}
+        style={[styles.input, { height: 150 }]}
         autoCorrect={false}
         selectionColor={"#823d0c"}
         placeholder="Mesajınız"
@@ -72,7 +79,11 @@ export default function HelpScreen() {
         onChangeText={(text) => setMessage(text)}
       />
 
-      <TouchableOpacity activeOpacity={0.8} style={styles.button}>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={styles.button}
+        onPress={sendEmail}
+      >
         <Text style={styles.buttonText}>Gönder</Text>
         <MaterialCommunityIcons
           name="email-fast-outline"
