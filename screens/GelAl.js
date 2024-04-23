@@ -7,15 +7,37 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Bar from "../components/Bar";
 import { Entypo } from "@expo/vector-icons";
 import restaurants_data from "../data/restaurants_data";
 import { FontAwesome } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
-
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function GelAl() {
+  const [income, setIncome] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "Restoranlar"));
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          const restaurantData = doc.data();
+          if (restaurantData.gelal === 1) {
+            data.push(restaurantData);
+          }
+        });
+        setIncome(data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   const [fontsLoaded, fontError] = useFonts({
     SemiBold: require("../assets/fonts/Caveat-SemiBold.ttf"),
   });
@@ -41,7 +63,7 @@ export default function GelAl() {
       <TouchableOpacity style={styles.cart} activeOpacity={0.9}>
         <View style={styles.leftSide}>
           <Image
-            source={item.image}
+            source={{ uri: item.image }}
             style={styles.image}
             resizeMode="stretch"
           />
@@ -69,7 +91,7 @@ export default function GelAl() {
       <View style={styles.container}>
         <Text style={styles.text}>Gel Al'a Özel Restoranlar</Text>
         <FlatList
-          data={restaurants_data}
+          data={income}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
