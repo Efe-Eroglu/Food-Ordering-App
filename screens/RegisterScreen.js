@@ -13,6 +13,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { auth } from "../firebase";
 
+
 export default function RegisterScreen() {
   const navigation = useNavigation();
   useEffect(() => {

@@ -1,6 +1,7 @@
+import { initializeApp } from "firebase/app";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID } from 'dotenv/config';
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,
@@ -11,9 +12,13 @@ const firebaseConfig = {
   appId: FIREBASE_APP_ID
 };
 
+
 if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
 }
 
 const auth = firebase.auth();
-export { auth };
+const db = getFirestore();
+
+
+export { auth, db }; 

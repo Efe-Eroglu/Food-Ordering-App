@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
@@ -13,6 +13,8 @@ import popular_data from "../data/popular_restaurants_data";
 import { useNavigation } from "@react-navigation/native";
 
 export default function RestaurantList() {
+ 
+
   const navigation = useNavigation();
 
   const renderItem = ({ item }) => (
@@ -39,7 +41,7 @@ export default function RestaurantList() {
     // Restoran ekranına yönlendirmesi yapılacak !!!
     // Item id si gönderilip id ye ait yemekler görüntülenecek
     // Geçici olarak dummy data ile çalışılacak
-    navigation.navigate("restoranMenu")
+    navigation.navigate("restoranMenu");
   };
 
   return (
