@@ -11,11 +11,29 @@ import {
 import { Entypo } from "@expo/vector-icons";
 import popular_data from "../data/popular_restaurants_data";
 import { useNavigation } from "@react-navigation/native";
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 export default function RestaurantList() {
- 
-
   const navigation = useNavigation();
+
+  const [income, setIncome] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "Restoranlar"));
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push(doc.data());
+        });
+        setIncome(data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const renderItem = ({ item }) => (
     <View>
@@ -24,7 +42,7 @@ export default function RestaurantList() {
         onPress={() => handlePress(item)}
         activeOpacity={0.8}
       >
-        <Image source={item.image} style={styles.image} resizeMode="stretch" />
+        <Image source={{ uri: item.image }} style={styles.image} resizeMode="stretch"/>
         <View style={styles.subtitleArea}>
           <Text style={[styles.subtitle, styles.star]}>
             <Entypo name="star" size={18} color="yellow" /> {item.rating}
@@ -47,7 +65,7 @@ export default function RestaurantList() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={popular_data}
+        data={income}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         horizontal={true}

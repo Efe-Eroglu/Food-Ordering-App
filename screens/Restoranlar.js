@@ -7,18 +7,20 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Bar from "../components/Bar";
 import { Entypo } from "@expo/vector-icons";
 import restaurants_data from "../data/restaurants_data";
 import { FontAwesome } from "@expo/vector-icons";
 import FilterBar from "../components/FilterBar";
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 const renderItem = ({ item }) => (
   <View>
     <TouchableOpacity style={styles.cart} activeOpacity={0.9}>
       <View style={styles.leftSide}>
-        <Image source={item.image} style={styles.image} resizeMode="stretch" />
+        <Image source={{ uri: item.image }} style={styles.image} resizeMode="stretch" />
       </View>
       <View style={styles.rightSide}>
         <Text style={styles.name}>{item.name}</Text>
@@ -43,13 +45,40 @@ export default function Restoranlar() {
     StatusBar.setBarStyle("light-content");
   }, []);
 
+
+
+
+  const [income, setIncome] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "Restoranlar"));
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push(doc.data());
+        });
+        setIncome(data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+
+
+
+
+
+
   return (
     <View>   
       <Bar />
       <View style={styles.container}>
         <FilterBar />
         <FlatList
-          data={restaurants_data}
+          data={income}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
