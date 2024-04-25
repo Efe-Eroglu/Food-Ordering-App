@@ -15,8 +15,12 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import { useNavigation } from "@react-navigation/native";
 
 export default function GelAl() {
+
+  const navigation = useNavigation()
+  
   const [income, setIncome] = useState([]);
 
   useEffect(() => {
@@ -60,7 +64,7 @@ export default function GelAl() {
 
   const renderItem = ({ item }) => (
     <View>
-      <TouchableOpacity style={styles.cart} activeOpacity={0.9}>
+      <TouchableOpacity style={styles.cart} activeOpacity={0.9} onPress={()=> navigation.navigate("restoranMenu",{restauran_name:item.name})}>
         <View style={styles.leftSide}>
           <Image
             source={{ uri: item.image }}

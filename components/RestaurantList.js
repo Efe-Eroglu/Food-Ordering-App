@@ -34,7 +34,7 @@ export default function RestaurantList() {
     };
     fetchData();
   }, []);
-
+ 
   const renderItem = ({ item }) => (
     <View>
       <TouchableOpacity

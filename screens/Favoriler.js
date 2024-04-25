@@ -16,8 +16,11 @@ import { useFonts } from "expo-font";
 import favourite from "../data/favourite_data";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Favoriler() {
+  const navigation = useNavigation();
+
   useEffect(() => {
     StatusBar.setBackgroundColor("#ad3103");
     StatusBar.setBarStyle("light-content");
@@ -46,7 +49,7 @@ export default function Favoriler() {
 
   const renderItem = ({ item }) => (
     <View>
-      <TouchableOpacity style={styles.cart} activeOpacity={0.9}>
+      <TouchableOpacity style={styles.cart} activeOpacity={0.9} onPress={()=> navigation.navigate("restoranMenu",{restauran_name:item.name})}>
         <View style={styles.leftSide}>
           <Image
             source={{ uri: item.image }}

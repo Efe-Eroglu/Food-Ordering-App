@@ -15,38 +15,42 @@ import { FontAwesome } from "@expo/vector-icons";
 import FilterBar from "../components/FilterBar";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
-
-const renderItem = ({ item }) => (
-  <View>
-    <TouchableOpacity style={styles.cart} activeOpacity={0.9}>
-      <View style={styles.leftSide}>
-        <Image source={{ uri: item.image }} style={styles.image} resizeMode="stretch" />
-      </View>
-      <View style={styles.rightSide}>
-        <Text style={styles.name}>{item.name}</Text>
-        <View style={styles.icons}>
-          <Text style={{marginRight:5}}>
-            <Entypo name="star" size={18} color="#edd142" />  {item.rating}
-          </Text>
-          <Text style={styles.delivery}>
-            <FontAwesome name="motorcycle" size={16} color="gray" />{" "}
-            {item.delivery}
-            <Text style={{ fontSize: 10 }}>dk</Text>
-          </Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  </View>
-);
+import { useNavigation } from "@react-navigation/native";
 
 export default function Restoranlar() {
+  const navigation = useNavigation();
+
+  const renderItem = ({ item }) => (
+    <View>
+      <TouchableOpacity style={styles.cart} activeOpacity={0.9} onPress={()=>navigation.navigate("restoranMenu",{restauran_name:item.name})}>
+        <View style={styles.leftSide}>
+          <Image
+            source={{ uri: item.image }}
+            style={styles.image}
+            resizeMode="stretch"
+          />
+        </View>
+        <View style={styles.rightSide}>
+          <Text style={styles.name}>{item.name}</Text>
+          <View style={styles.icons}>
+            <Text style={{ marginRight: 5 }}>
+              <Entypo name="star" size={18} color="#edd142" /> {item.rating}
+            </Text>
+            <Text style={styles.delivery}>
+              <FontAwesome name="motorcycle" size={16} color="gray" />{" "}
+              {item.delivery}
+              <Text style={{ fontSize: 10 }}>dk</Text>
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+
   useEffect(() => {
     StatusBar.setBackgroundColor("#ad3103");
     StatusBar.setBarStyle("light-content");
   }, []);
-
-
-
 
   const [income, setIncome] = useState([]);
 
@@ -66,14 +70,8 @@ export default function Restoranlar() {
     fetchData();
   }, []);
 
-
-
-
-
-
-
   return (
-    <View>   
+    <View>
       <Bar />
       <View style={styles.container}>
         <FilterBar />

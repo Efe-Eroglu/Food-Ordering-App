@@ -16,10 +16,11 @@ export default function RestaurantMenu() {
 
   const route = useRoute();
   const { restauran_name } = route.params;
-
+  
   const [income, setIncome] = useState("");
 
   const pipeline = doc(db,"Restoranlar",restauran_name)
+
 
   useEffect(()=>{
     onSnapshot(pipeline, (doc) => {
@@ -30,18 +31,18 @@ export default function RestaurantMenu() {
 
   console.log(income);
 
-
-  
-
   return (
     <View style={styles.container}>
       <PastOrderBar title={restauran_name} />
       <View style={styles.banner}>
         <Image
-          source={require("../assets/banner.jpeg")}
+          source={{uri:income.image}}
           style={styles.image}
           resizeMode="stretch"
         />
+        <View style={styles.bannerText}>
+          <Text style={{fontSize:20, fontStyle:"italic"}}>{income.name}</Text>
+        </View>
       </View>
 
       <Products />
@@ -61,6 +62,14 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
-    borderRadius: 10,
   },
+  bannerText:{
+    backgroundColor:"rgba(252, 252, 252,0.8)",
+    position:"absolute",
+    bottom:10,
+    padding:10,
+    borderTopEndRadius:20,
+    borderBottomEndRadius:20
+    
+  }
 });
