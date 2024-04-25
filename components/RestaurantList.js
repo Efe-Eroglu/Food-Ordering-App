@@ -56,10 +56,7 @@ export default function RestaurantList() {
   );
 
   const handlePress = (item) => {
-    // Restoran ekranına yönlendirmesi yapılacak !!!
-    // Item id si gönderilip id ye ait yemekler görüntülenecek
-    // Geçici olarak dummy data ile çalışılacak
-    navigation.navigate("restoranMenu");
+    navigation.navigate("restoranMenu",{restauran_name:item.name});
   };
 
   return (

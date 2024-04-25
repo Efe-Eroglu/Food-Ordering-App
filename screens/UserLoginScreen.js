@@ -10,8 +10,7 @@ import {
 import { useFonts } from "expo-font";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { auth } from "../firebase";
-
+import { auth, db } from "../firebase";
 
 export default function UserLoginScreen() {
   const navigation = useNavigation();
@@ -21,7 +20,7 @@ export default function UserLoginScreen() {
     StatusBar.setBarStyle("dark-content");
   }, []);
 
-  const [email, setEmail] = useState("");
+  const [user_email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   useEffect(() => {
@@ -33,8 +32,9 @@ export default function UserLoginScreen() {
   }, []);
 
   const handleLogin = () => {
+
     auth
-      .signInWithEmailAndPassword(email, password)
+      .signInWithEmailAndPassword(user_email, password)
       .then((userCredentials) => {
         const user = userCredentials.user;
         console.log("Kullanıcı giriş yaptı", user.email);
