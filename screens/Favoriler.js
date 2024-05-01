@@ -16,10 +16,13 @@ import { useFonts } from "expo-font";
 import favourite from "../data/favourite_data";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 export default function Favoriler() {
   const navigation = useNavigation();
+
+  const route = useRoute();
+  const { user_mail } = route.params;
 
   useEffect(() => {
     StatusBar.setBackgroundColor("#ad3103");
@@ -49,7 +52,10 @@ export default function Favoriler() {
 
   const renderItem = ({ item }) => (
     <View>
-      <TouchableOpacity style={styles.cart} activeOpacity={0.9} onPress={()=> navigation.navigate("restoranMenu",{restauran_name:item.name})}>
+      <TouchableOpacity style={styles.cart} activeOpacity={0.9} onPress={()=> navigation.navigate("restoranMenu",{
+        restauran_name:item.name,
+        user_mail : user_mail
+        })}>
         <View style={styles.leftSide}>
           <Image
             source={{ uri: item.image }}
@@ -90,9 +96,9 @@ export default function Favoriler() {
   }
   return (
     <View style={styles.outContainer}>
-      <Bar />
+      <Bar email={user_mail}/>
       <View style={styles.container}>
-        <FilterBar />
+        <FilterBar user_mail={user_mail}/>
         <FlatList
           data={income}
           renderItem={renderItem}

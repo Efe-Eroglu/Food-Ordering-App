@@ -26,19 +26,12 @@ export default function RegisterScreen() {
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
 
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        navigation.navigate("home");
-      }
-    });
-  }, []);
-
   const handleSignUp = () => {
     auth
       .createUserWithEmailAndPassword(email, password)
       .then((userCredentials) => {
         const user = userCredentials.user;
+        navigation.navigate("login");
         console.log("Kullanıcı kayıt oldu", user.email);
       })
       .catch((error) => alert(error.message));

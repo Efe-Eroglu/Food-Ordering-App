@@ -9,7 +9,7 @@ import React, { useEffect } from "react";
 import { auth } from "../firebase";
 import { useNavigation } from "@react-navigation/native";
 
-export default function DetailsMenu() {
+export default function DetailsMenu({email}) {
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function DetailsMenu() {
       <TouchableOpacity
         style={styles.card}
         activeOpacity={0.7}
-        onPress={() => navigation.navigate("hesapDetay")}
+        onPress={() => navigation.navigate("hesapDetay",{user_mail:email})}
       >
         <Text style={styles.text}>Hesap Bilgilerim</Text>
       </TouchableOpacity>
@@ -40,11 +40,11 @@ export default function DetailsMenu() {
       <TouchableOpacity
         style={styles.card}
         activeOpacity={0.7}
-        onPress={() => navigation.navigate("gecmisSiparis")}
+        onPress={() => navigation.navigate("gecmisSiparis",{user_mail:email})}
       >
         <Text style={styles.text}>Geçmiş Siparişlerim</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={()=> navigation.navigate("yardim")}>
+      <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={()=> navigation.navigate("yardim",{user_mail:email})}>
         <Text style={styles.text}>Yardım Merkezi</Text>
       </TouchableOpacity>
       <TouchableOpacity

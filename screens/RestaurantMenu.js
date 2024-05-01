@@ -15,7 +15,7 @@ export default function RestaurantMenu() {
   }, []);
 
   const route = useRoute();
-  const { restauran_name } = route.params;
+  const { restauran_name, user_mail } = route.params;
   
   const [income, setIncome] = useState("");
 
@@ -28,12 +28,11 @@ export default function RestaurantMenu() {
     })
   },[])
 
-
-  console.log(income);
+  console.log("Restoran Menu : ", user_mail);
 
   return (
     <View style={styles.container}>
-      <PastOrderBar title={restauran_name} />
+      <PastOrderBar title={restauran_name} user_mail={user_mail}/>
       <View style={styles.banner}>
         <Image
           source={{uri:income.image}}
@@ -45,7 +44,7 @@ export default function RestaurantMenu() {
         </View>
       </View>
 
-      <Products />
+      <Products user_mail={user_mail} />
     </View>
   );
 }

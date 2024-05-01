@@ -10,7 +10,10 @@ import React from "react";
 import products from "../data/product_data";
 import { AntDesign } from "@expo/vector-icons";
 
-export default function Products() {
+export default function Products({user_mail}) {
+
+  console.log("Products : ", user_mail);
+
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.leftSide}>

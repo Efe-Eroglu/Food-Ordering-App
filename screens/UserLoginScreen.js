@@ -1,3 +1,4 @@
+import React, { useEffect, useState, useCallback } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -5,12 +6,11 @@ import {
   Text,
   View,
   StatusBar,
-  Platform,
 } from "react-native";
 import { useFonts } from "expo-font";
-import { useCallback, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { auth, db } from "../firebase";
+import { collection, doc, getDoc, getDocs, query } from "firebase/firestore";
 
 export default function UserLoginScreen() {
   const navigation = useNavigation();
@@ -22,16 +22,36 @@ export default function UserLoginScreen() {
 
   const [user_email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [income, setIncome] = useState(null);
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        navigation.navigate("home");
+        navigation.navigate("home", {user_mail:user.email});
+        console.log("User mail :Ç ",user.email);
       }
     });
   }, []);
 
-  const handleLogin = () => {
+  const [fontsLoaded] = useFonts({
+    Medium: require("../assets/fonts/Caveat-Medium.ttf"),
+    SemiBold: require("../assets/fonts/Caveat-SemiBold.ttf"),
+    Roboto: require("../assets/fonts/Roboto-Bold.ttf"),
+  });
+
+  const handleLogin = async () => {
+    try {
+      const userDocRef = doc(db, "Kullanicilar", user_email);
+      const userDocSnapshot = await getDoc(userDocRef);
+
+      if (!userDocSnapshot.exists()) {
+        console.log("Kullanıcı belgesi bulunamadı.");
+      } else {
+        setIncome(userDocSnapshot.data());
+      }
+    } catch (error) {
+      console.error("Belge alınırken hata oluştu: ", error);
+    }
 
     auth
       .signInWithEmailAndPassword(user_email, password)
@@ -42,21 +62,10 @@ export default function UserLoginScreen() {
       .catch((error) => alert(error.message));
   };
 
-  const [fontsLoaded, fontError] = useFonts({
-    Medium: require("../assets/fonts/Caveat-Medium.ttf"),
-    SemiBold: require("../assets/fonts/Caveat-SemiBold.ttf"),
-    Roboto: require("../assets/fonts/Roboto-Bold.ttf"),
-  });
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded || fontError) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, fontError]);
-
-  if (!fontsLoaded && !fontError) {
+  if (!fontsLoaded) {
     return null;
   }
+
 
   return (
     <View style={styles.container}>

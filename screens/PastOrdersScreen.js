@@ -10,7 +10,7 @@ import {
 import { EvilIcons } from '@expo/vector-icons';
 import React, { useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import PastOrderBar from "../components/PastOrderBar";
 import { Entypo } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
@@ -19,6 +19,10 @@ import past_orders from "../data/past_order_data";
 
 export default function PastOrdersScreen() {
   const navigation = useNavigation();
+
+  
+  const route = useRoute();
+  const { user_mail } = route.params;
 
   useEffect(() => {
     StatusBar.setBackgroundColor("#ad3103");
@@ -51,7 +55,7 @@ export default function PastOrdersScreen() {
   );
   return (
     <View style={styles.outcontainer}>
-      <PastOrderBar title={"Geçmiş Siparişler"} />
+      <PastOrderBar title={"Geçmiş Siparişler"} user_mail={user_mail}/>
 
       <View style={styles.container}>
         <FlatList

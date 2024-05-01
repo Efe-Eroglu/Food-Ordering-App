@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,12 +12,27 @@ import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import SearchBar from "./SearchBar";
 import { Feather } from "@expo/vector-icons";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import DetailsMenu from "./DetailsMenu";
+import { doc, onSnapshot } from "firebase/firestore";
 
-export default function Bar() {
+export default function Bar({email}) {
+
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [income, setIncome] = useState("");
+
+  const pipeline = doc(db,"Kullanicilar",email)
+
+ 
+  useEffect(()=>{
+    onSnapshot(pipeline, (doc) => {
+      setIncome(doc.data())
+    })
+  },[])
+
+
 
   return (
     <KeyboardAvoidingView behavior="height">
@@ -32,16 +47,16 @@ export default function Bar() {
             </TouchableOpacity>
 
             <View style={{ marginLeft: 18 }}>
-              <Text style={styles.addresTitle}>Ataşehir mahallesi</Text>
+              <Text style={styles.addresTitle}>{income.adress}</Text>
               <Text style={styles.addresContent}>
-                Elazığ Merkez Elazığ 23100
+                {income.city +"/" +income.district + " " + income.postalCode}
               </Text>
             </View>
           </View>
 
           <TouchableOpacity
             activeOpacity={0.6}
-            onPress={() => navigation.navigate("cart")}
+            onPress={() => navigation.navigate("cart", {user_mail:email})}
           >
             <MaterialCommunityIcons
               name="shopping-outline"
@@ -68,7 +83,9 @@ export default function Bar() {
             <View style={styles.modalOverlay} />
           </TouchableWithoutFeedback>
           <View style={styles.modalContent}>
-            <DetailsMenu />
+
+            <DetailsMenu email={email} />
+          
           </View>
         </Modal>
       </View>

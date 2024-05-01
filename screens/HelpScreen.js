@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import PastOrderBar from "../components/PastOrderBar";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import email from 'react-native-email';
+import { useRoute } from "@react-navigation/native";
 
 export default function HelpScreen() {
   useEffect(() => {
@@ -13,6 +14,11 @@ export default function HelpScreen() {
   const [name, setName] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [message, setMessage] = useState("");
+
+  
+  const route = useRoute();
+  const { user_mail } = route.params;
+
 
   const sendEmail = () => {
     if (name.length !== 0 && message.length !== 0) {
@@ -30,7 +36,7 @@ export default function HelpScreen() {
 
   return (
     <View style={styles.container}>
-      <PastOrderBar title={"İletişim Merkezi"} />
+      <PastOrderBar title={"İletişim Merkezi"} user_mail={user_mail}/>
 
       <Text
         style={{

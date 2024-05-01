@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Octicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-export default function FilterBar() {
+export default function FilterBar({user_mail}) {
   return (
 
     <ScrollView style={styles.container}  horizontal showsHorizontalScrollIndicator={false}>

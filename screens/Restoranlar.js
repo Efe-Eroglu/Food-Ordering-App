@@ -16,13 +16,20 @@ import FilterBar from "../components/FilterBar";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 
 export default function Restoranlar() {
   const navigation = useNavigation();
 
+  const route = useRoute();
+  const { user_mail } = route.params;
+
   const renderItem = ({ item }) => (
     <View>
-      <TouchableOpacity style={styles.cart} activeOpacity={0.9} onPress={()=>navigation.navigate("restoranMenu",{restauran_name:item.name})}>
+      <TouchableOpacity style={styles.cart} activeOpacity={0.9} onPress={()=>navigation.navigate("restoranMenu",{
+        restauran_name:item.name,
+        user_mail:user_mail
+        })}>
         <View style={styles.leftSide}>
           <Image
             source={{ uri: item.image }}
@@ -72,9 +79,9 @@ export default function Restoranlar() {
 
   return (
     <View>
-      <Bar />
+      <Bar email={user_mail}/>
       <View style={styles.container}>
-        <FilterBar />
+        <FilterBar user_mail={user_mail}/>
         <FlatList
           data={income}
           renderItem={renderItem}

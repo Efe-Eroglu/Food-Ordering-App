@@ -14,10 +14,12 @@ import { useNavigation } from "@react-navigation/native";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 
-export default function RestaurantList() {
+export default function RestaurantList({user_mail}) {
   const navigation = useNavigation();
 
   const [income, setIncome] = useState([]);
+
+  console.log("Restoran List : ", user_mail);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,7 +58,11 @@ export default function RestaurantList() {
   );
 
   const handlePress = (item) => {
-    navigation.navigate("restoranMenu",{restauran_name:item.name});
+    console.log("RL : ," , user_mail);
+    navigation.navigate("restoranMenu",{
+      restauran_name:item.name,
+      user_mail : user_mail
+    });
   };
 
   return (

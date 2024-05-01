@@ -3,16 +3,17 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-export default function PastOrderBar({title}) {
+export default function PastOrderBar({title,user_mail}) {
   const navigation = useNavigation();
-
+  console.log("Past Order : ", user_mail);
+  
   return (
     <View style={styles.container}>
       <View style={styles.left}>
         <TouchableOpacity
           style={{ marginHorizontal: 13, marginTop: 5 }}
           activeOpacity={0.9}
-          onPress={() => navigation.navigate("home")}
+          onPress={() => navigation.navigate("home", {user_mail:user_mail})}
         >
           <Ionicons name="arrow-back-outline" size={32} color="white" />
         </TouchableOpacity>

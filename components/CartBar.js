@@ -3,13 +3,13 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-export default function CartBar() {
+export default function CartBar({user_mail}) {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.left}>
 
-        <TouchableOpacity style={{marginHorizontal:13 ,marginTop:5}} activeOpacity={0.9} onPress={()=>navigation.navigate("home")}>
+        <TouchableOpacity style={{marginHorizontal:13 ,marginTop:5}} activeOpacity={0.9} onPress={()=>navigation.navigate("home", {user_mail:user_mail})}>
           <Ionicons name="arrow-back-outline" size={32} color="white" />
         </TouchableOpacity>
 

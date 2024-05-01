@@ -5,8 +5,10 @@ import { useFonts } from "expo-font";
 import { db } from "../firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 
-export default function Restaurants() {
+export default function Restaurants({user_mail}) {
  
+
+  console.log("Restaurants : ", user_mail);
 
   const [fontsLoaded, fontError] = useFonts({
     denme: require("../assets/fonts/Quicksand-Light.ttf"),
@@ -25,7 +27,7 @@ export default function Restaurants() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Popüler Restoranlar</Text>
-      <RestaurantList />
+      <RestaurantList user_mail={user_mail}/>
     </View>
   );
 }

@@ -8,6 +8,7 @@ import {
 import React, { useCallback, useState } from "react";
 import { useFonts } from "expo-font";
 import PastOrderBar from "../components/PastOrderBar";
+import { useRoute } from "@react-navigation/native";
 
 export default function AccountDetailsScreen() {
   const [email, setEmail] = useState("");
@@ -16,6 +17,9 @@ export default function AccountDetailsScreen() {
   const [surname, setSurname] = useState("");
   const [phone, setPhoneNumber] = useState("");
 
+  
+  const route = useRoute();
+  const { user_mail } = route.params;
 
   const [fontsLoaded, fontError] = useFonts({
     Medium: require("../assets/fonts/Caveat-Medium.ttf"),
@@ -34,7 +38,7 @@ export default function AccountDetailsScreen() {
 
   return (
     <View style={styles.container}>
-        <PastOrderBar title={"Hesap Detayları"}/>
+        <PastOrderBar title={"Hesap Detayları"} user_mail={user_mail}/>
         <Text style={styles.title}>Hesap Detayları</Text>
         <TextInput
           style={styles.input}
