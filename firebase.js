@@ -4,14 +4,13 @@ import "firebase/compat/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD8DOIB5bcH5xRtiR-UeIl-s0aVRoDAxOk",
-  authDomain: "hamburgerci-f17fd.firebaseapp.com",
-  projectId: "hamburgerci-f17fd",
-  storageBucket: "hamburgerci-f17fd.appspot.com",
-  messagingSenderId: "609270533710",
-  appId: "1:609270533710:web:2ebd83a060214cd00d3d1f"
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+  appId: FIREBASE_APP_ID
 };
-
 
 
 if (!firebase.apps.length) {

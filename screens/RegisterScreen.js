@@ -1,18 +1,9 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Button,
-  StatusBar,
-  Platform,
-} from "react-native";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Button, StatusBar, Platform } from "react-native";
 import { useFonts } from "expo-font";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { auth } from "../firebase";
-
+import { auth, db } from "../firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
@@ -26,15 +17,28 @@ export default function RegisterScreen() {
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
 
-  const handleSignUp = () => {
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        navigation.navigate("login");
-        console.log("Kullanıcı kayıt oldu", user.email);
-      })
-      .catch((error) => alert(error.message));
+  const handleSignUp = async () => {
+    try {
+      const userCredential = await auth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
+      const user = userCredential.user;
+      await setDoc(doc(db, "Kullanicilar", email), {
+        name: name,
+        surname: surname,
+        email: email,
+        id:4,
+        adress:"asds",
+        city:"asdasd",
+        district:"asdas",
+        postalCode:"231",
+        pastOrder:[],
+      });
+      console.log("Kullanıcı kayıt oldu", user.email);
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   const [fontsLoaded, fontError] = useFonts({
@@ -42,12 +46,6 @@ export default function RegisterScreen() {
     SemiBold: require("../assets/fonts/Caveat-SemiBold.ttf"),
     Roboto: require("../assets/fonts/Roboto-Bold.ttf"),
   });
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded || fontError) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, fontError]);
 
   if (!fontsLoaded && !fontError) {
     return null;
@@ -95,9 +93,13 @@ export default function RegisterScreen() {
         onChangeText={(text) => setPassword(text)}
       />
       <View style={styles.subtitle}>
-        <Text style={styles.subtitleText}>Hesabını var mı?</Text>
-        <TouchableOpacity activeOpacity={0.7}
-        onPress={()=>{navigation.navigate("login")}}>
+        <Text style={styles.subtitleText}>Hesabınız var mı?</Text>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => {
+            navigation.navigate("login");
+          }}
+        >
           <Text style={styles.subtitleText}>Giriş Yap</Text>
         </TouchableOpacity>
       </View>
@@ -112,6 +114,7 @@ export default function RegisterScreen() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

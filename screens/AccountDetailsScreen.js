@@ -9,15 +9,16 @@ import React, { useCallback, useState } from "react";
 import { useFonts } from "expo-font";
 import PastOrderBar from "../components/PastOrderBar";
 import { useRoute } from "@react-navigation/native";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function AccountDetailsScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [surname, setSurname] = useState("");
-  const [phone, setPhoneNumber] = useState("");
+  const [sehir, setSehir] = useState("");
+  const [ilce, setIlce] = useState("");
+  const [mahalle, setMahalle] = useState("");
+  const [postaKodu, setPostaKodu] = useState("");
+  const [telefon, setTelefon] = useState("");
 
-  
   const route = useRoute();
   const { user_mail } = route.params;
 
@@ -36,62 +37,81 @@ export default function AccountDetailsScreen() {
     return null;
   }
 
+  const update = async () => {
+    try {
+      await updateDoc(doc(db, "Kullanicilar", user_mail), {
+        adress: mahalle,
+        city: sehir,
+        district: ilce,
+        postalCode: postaKodu,
+        phone: telefon,
+      });
+      console.log("Kullanıcı bilgi güncelledi", user_mail);
+    } catch (error) {
+      console.error("Hata:", error);
+    }
+  };
+
+
   return (
     <View style={styles.container}>
-        <PastOrderBar title={"Hesap Detayları"} user_mail={user_mail}/>
-        <Text style={styles.title}>Hesap Detayları</Text>
-        <TextInput
-          style={styles.input}
-          autoCapitalize="sentences"
-          autoCorrect={false}
-          placeholder="İsim"
-          selectionColor={"#823d0c"}
-          placeholderTextColor={"black"}
-          onChangeText={(text) => setName(text)}
-        />
-        <TextInput
-          style={styles.input}
-          autoCapitalize="sentences"
-          autoCorrect={false}
-          selectionColor={"#823d0c"}
-          placeholder="Soyisim"
-          placeholderTextColor={"black"}
-          onChangeText={(text) => setSurname(text)}
-        />
-        <TextInput
-          style={styles.input}
-          autoCapitalize="none"
-          autoCorrect={false}
-          selectionColor={"#823d0c"}
-          keyboardType="phone-pad"
-          placeholder="Telefon Numarası"
-          placeholderTextColor={"black"}
-          onChangeText={(text) => setPhoneNumber(text)}
-        />
-        <TextInput
-          style={styles.input}
-          autoCapitalize="none"
-          autoCorrect={false}
-          selectionColor={"#823d0c"}
-          keyboardType="email-address"
-          placeholder="E-Posta"
-          placeholderTextColor={"black"}
-          onChangeText={(text) => setEmail(text)}
-        />
-        <TextInput
-          style={styles.input}
-          autoCapitalize="none"
-          autoCorrect={false}
-          selectionColor={"#823d0c"}
-          placeholder="Şifre"
-          placeholderTextColor={"black"}
-          secureTextEntry
-          onChangeText={(text) => setPassword(text)}
-        />
+      <PastOrderBar title={"Hesap Detayları"} user_mail={user_mail} />
+      <Text style={styles.title}>Hesap Detayları</Text>
+      <TextInput
+        style={styles.input}
+        autoCapitalize="sentences"
+        autoCorrect={false}
+        placeholder="Şehir"
+        selectionColor={"#823d0c"}
+        placeholderTextColor={"black"}
+        onChangeText={(text) => setSehir(text)}
+      />
+      <TextInput
+        style={styles.input}
+        autoCapitalize="sentences"
+        autoCorrect={false}
+        selectionColor={"#823d0c"}
+        placeholder="İlçe"
+        placeholderTextColor={"black"}
+        onChangeText={(text) => setIlce(text)}
+      />
+      <TextInput
+        style={styles.input}
+        autoCapitalize="sentences"
+        autoCorrect={false}
+        selectionColor={"#823d0c"}
+        placeholder="Mahalle"
+        placeholderTextColor={"black"}
+        onChangeText={(text) => setMahalle(text)}
+      />
+      <TextInput
+        style={styles.input}
+        autoCapitalize="none"
+        autoCorrect={false}
+        selectionColor={"#823d0c"}
+        keyboardType="phone-pad"
+        placeholder="Posta Kodu"
+        placeholderTextColor={"black"}
+        onChangeText={(text) => setPostaKodu(text)}
+      />
+      <TextInput
+        style={styles.input}
+        autoCapitalize="none"
+        autoCorrect={false}
+        selectionColor={"#823d0c"}
+        keyboardType="phone-pad"
+        placeholder="Telefon Numarası"
+        placeholderTextColor={"black"}
+        onChangeText={(text) => setTelefon(text)}
+      />
 
-        <TouchableOpacity activeOpacity={0.8} style={styles.button}>
-          <Text style={styles.buttonText}>Kaydet</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={styles.button}
+        onPress={update}
+      >
+        <Text style={styles.buttonText}>Kaydet</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -103,8 +123,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 48,
-    marginVertical:50,
-    fontFamily:"Medium"
+    marginVertical: 50,
+    fontFamily: "Medium",
   },
   input: {
     padding: 15,
