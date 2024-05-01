@@ -14,7 +14,6 @@ export default function HomeScreen() {
 
   const route = useRoute();
   const { user_mail } = route.params;
-  console.log("Home : " , user_mail);
 
   
   return (

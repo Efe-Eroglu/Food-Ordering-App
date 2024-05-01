@@ -1,30 +1,44 @@
-import {
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import React from "react";
-import products from "../data/product_data";
+import React, { useEffect, useState } from "react";
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../screens/cartAction';
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
-export default function Products({user_mail}) {
+export default function Products({ user_mail, restauran_name }) {
+  const [products, setProducts] = useState([]);
+  const dispatch = useDispatch();
+  const cart = useSelector(state => state.cart.cart);
 
-  console.log("Products : ", user_mail);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const querySnapshot = await getDocs(collection(db, restauran_name));
+      const fetchedProducts = [];
+      querySnapshot.forEach((doc) => {
+        fetchedProducts.push({ id: doc.id, ...doc.data() });
+      });
+      setProducts(fetchedProducts);
+    };
+
+    fetchProducts();
+  }, []);
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.leftSide}>
-        <Image source={item.image} style={styles.image} resizeMode="stretch" />
+        <Image source={{ uri: item.img }} style={styles.image} resizeMode="stretch" />
       </View>
       <View style={styles.rightSide}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.content}>{item.contents}</Text>
+        <Text style={styles.content}>{item.content.join(", ")}</Text>
         <View style={styles.price}>
-          <Text style={{fontSize:14}}>{item.price}₺</Text>
-          <TouchableOpacity style={styles.button} activeOpacity={0.8}>
+          <Text style={{ fontSize: 14 }}>{item.price}₺</Text>
+          <TouchableOpacity
+            style={styles.button}
+            activeOpacity={0.8}
+            onPress={() => dispatch(addToCart(item))}
+          >
             <AntDesign name="plus" size={18} color="white" />
           </TouchableOpacity>
         </View>
@@ -46,10 +60,9 @@ export default function Products({user_mail}) {
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
-    height: "100%",
+    flex: 1,
+    backgroundColor: "white",
     padding: 10,
-    alignItems: "center",
   },
   card: {
     width: 350,
@@ -75,6 +88,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: "100%",
     height: "100%",
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.1)",
   },
   name: {
     fontWeight: "bold",
@@ -91,12 +106,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 10,
     alignSelf: "flex-end",
-    marginRight:10,
+    marginRight: 10,
   },
   price: {
     justifyContent: "space-between",
     alignContent: "center",
-    flexDirection:"row",
-    marginTop:5
+    flexDirection: "row",
+    marginTop: 5,
   },
 });

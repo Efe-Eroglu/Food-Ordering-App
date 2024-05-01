@@ -26,7 +26,6 @@
     const route = useRoute();
     const { user_mail } = route.params;
 
-    console.log("Gel Al : " , user_mail);
 
     useEffect(() => {
       const fetchData = async () => {

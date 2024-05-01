@@ -5,7 +5,6 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function PastOrderBar({title,user_mail}) {
   const navigation = useNavigation();
-  console.log("Past Order : ", user_mail);
   
   return (
     <View style={styles.container}>

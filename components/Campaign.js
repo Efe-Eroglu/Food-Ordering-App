@@ -4,7 +4,6 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function Campaign({email}) {
   const navigation = useNavigation();
-  console.log("Campaign : ", email);
 
   return (
     <View style={styles.container}>

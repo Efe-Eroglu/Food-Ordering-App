@@ -19,7 +19,6 @@ export default function RestaurantList({user_mail}) {
 
   const [income, setIncome] = useState([]);
 
-  console.log("Restoran List : ", user_mail);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,7 +57,6 @@ export default function RestaurantList({user_mail}) {
   );
 
   const handlePress = (item) => {
-    console.log("RL : ," , user_mail);
     navigation.navigate("restoranMenu",{
       restauran_name:item.name,
       user_mail : user_mail
@@ -81,6 +79,7 @@ export default function RestaurantList({user_mail}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    
   },
   restaurant: {
     width: 300,

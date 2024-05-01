@@ -28,12 +28,12 @@ export default function RegisterScreen() {
         name: name,
         surname: surname,
         email: email,
-        id:4,
-        adress:"asds",
-        city:"asdasd",
-        district:"asdas",
-        postalCode:"231",
+        adress:"",
+        city:"",
+        district:"",
+        postalCode:"",
         pastOrder:[],
+        cart:[],
       });
       console.log("Kullanıcı kayıt oldu", user.email);
     } catch (error) {

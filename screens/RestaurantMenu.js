@@ -28,7 +28,6 @@ export default function RestaurantMenu() {
     })
   },[])
 
-  console.log("Restoran Menu : ", user_mail);
 
   return (
     <View style={styles.container}>
@@ -44,7 +43,7 @@ export default function RestaurantMenu() {
         </View>
       </View>
 
-      <Products user_mail={user_mail} />
+      <Products user_mail={user_mail} restauran_name={restauran_name} />
     </View>
   );
 }

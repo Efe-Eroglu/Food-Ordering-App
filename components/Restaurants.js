@@ -8,7 +8,6 @@ import { doc, onSnapshot } from "firebase/firestore";
 export default function Restaurants({user_mail}) {
  
 
-  console.log("Restaurants : ", user_mail);
 
   const [fontsLoaded, fontError] = useFonts({
     denme: require("../assets/fonts/Quicksand-Light.ttf"),
