@@ -1,4 +1,13 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Button, StatusBar, Platform } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Button,
+  StatusBar,
+  ScrollView,
+} from "react-native";
 import { useFonts } from "expo-font";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -16,29 +25,57 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [district, setDistrict] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [step, setStep] = useState(1);
+  const [errors, setErrors] = useState({});
 
   const handleSignUp = async () => {
-    try {
-      const userCredential = await auth.createUserWithEmailAndPassword(
-        email,
-        password
-      );
-      const user = userCredential.user;
-      await setDoc(doc(db, "Kullanicilar", email), {
-        name: name,
-        surname: surname,
-        email: email,
-        adress:"",
-        city:"",
-        district:"",
-        postalCode:"",
-        pastOrder:[],
-        cart:[],
-      });
-      console.log("Kullanıcı kayıt oldu", user.email);
-      navigation.navigate("home",{user_mail:email})
-    } catch (error) {
-      alert(error.message);
+    if (step === 1) {
+      if (!name || !surname || !email || !password) {
+        setErrors({
+          name: !name,
+          surname: !surname,
+          email: !email,
+          password: !password,
+        });
+        return;
+      }
+      setStep(2);
+    } else if (step === 2) {
+      if (!city || !district || !address || !postalCode) {
+        setErrors({
+          city: !city,
+          district: !district,
+          address: !address,
+          postalCode: !postalCode,
+        });
+        return;
+      }
+      try {
+        const userCredential = await auth.createUserWithEmailAndPassword(
+          email,
+          password
+        );
+        const user = userCredential.user;
+        await setDoc(doc(db, "Kullanicilar", email), {
+          name: name,
+          surname: surname,
+          email: email,
+          adress: address,
+          city: city,
+          district: district,
+          postalCode: postalCode,
+          pastOrder: [],
+          cart: [],
+        });
+        console.log("Kullanıcı kayıt oldu", user.email);
+        navigation.navigate("home", { user_mail: email });
+      } catch (error) {
+        alert(error.message);
+      }
     }
   };
 
@@ -52,84 +89,157 @@ export default function RegisterScreen() {
     return null;
   }
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Kayıt Ol</Text>
-      <TextInput
-        style={styles.input}
-        autoCapitalize="sentences"
-        autoCorrect={false}
-        placeholder="İsim"
-        selectionColor={"#823d0c"}
-        placeholderTextColor={"black"}
-        onChangeText={(text) => setName(text)}
-      />
-      <TextInput
-        style={styles.input}
-        autoCapitalize="sentences"
-        autoCorrect={false}
-        selectionColor={"#823d0c"}
-        placeholder="Soyisim"
-        placeholderTextColor={"black"}
-        onChangeText={(text) => setSurname(text)}
-      />
-      <TextInput
-        style={styles.input}
-        autoCapitalize="none"
-        autoCorrect={false}
-        selectionColor={"#823d0c"}
-        keyboardType="email-address"
-        placeholder="E-Posta"
-        placeholderTextColor={"black"}
-        onChangeText={(text) => setEmail(text)}
-      />
-      <TextInput
-        style={styles.input}
-        autoCapitalize="none"
-        autoCorrect={false}
-        selectionColor={"#823d0c"}
-        placeholder="Şifre"
-        placeholderTextColor={"black"}
-        secureTextEntry
-        onChangeText={(text) => setPassword(text)}
-      />
-      <View style={styles.subtitle}>
-        <Text style={styles.subtitleText}>Hesabınız var mı?</Text>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => {
-            navigation.navigate("login");
-          }}
-        >
-          <Text style={styles.subtitleText}>Giriş Yap</Text>
-        </TouchableOpacity>
-      </View>
+  const renderStepOne = () => {
+    return (
+      <>
+        <TextInput
+          style={[styles.input, errors.name && styles.errorBorder]}
+          autoCapitalize="sentences"
+          autoCorrect={false}
+          placeholder="İsim"
+          selectionColor={"#823d0c"}
+          placeholderTextColor={"black"}
+          onChangeText={(text) => setName(text)}
+        />
+        <TextInput
+          style={[styles.input, errors.surname && styles.errorBorder]}
+          autoCapitalize="sentences"
+          autoCorrect={false}
+          selectionColor={"#823d0c"}
+          placeholder="Soyisim"
+          placeholderTextColor={"black"}
+          onChangeText={(text) => setSurname(text)}
+        />
+        <TextInput
+          style={[styles.input, errors.email && styles.errorBorder]}
+          autoCapitalize="none"
+          autoCorrect={false}
+          selectionColor={"#823d0c"}
+          keyboardType="email-address"
+          placeholder="E-Posta"
+          placeholderTextColor={"black"}
+          onChangeText={(text) => setEmail(text)}
+        />
+        <TextInput
+          style={[styles.input, errors.password && styles.errorBorder]}
+          autoCapitalize="none"
+          autoCorrect={false}
+          selectionColor={"#823d0c"}
+          placeholder="Şifre"
+          placeholderTextColor={"black"}
+          secureTextEntry
+          onChangeText={(text) => setPassword(text)}
+        />
 
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={styles.button}
-        onPress={handleSignUp}
-      >
-        <Text style={styles.buttonText}>Kayıt Ol</Text>
-      </TouchableOpacity>
-    </View>
+        <View style={styles.subtitle}>
+          <Text style={styles.subtitleText}>Hesabınız var mı?</Text>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => {
+              navigation.navigate("login");
+            }}
+          >
+            <Text style={styles.subtitleText}>Giriş Yap</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={styles.button}
+          onPress={handleSignUp}
+        >
+          <Text style={styles.buttonText}>Devam</Text>
+        </TouchableOpacity>
+      </>
+    );
+  };
+
+  const renderStepTwo = () => {
+    return (
+      <>
+        <TextInput
+          style={[styles.input, errors.city && styles.errorBorder]}
+          autoCapitalize="sentences"
+          autoCorrect={false}
+          selectionColor={"#823d0c"}
+          placeholder="Şehir"
+          placeholderTextColor={"black"}
+          onChangeText={(text) => setCity(text)}
+        />
+        <TextInput
+          style={[styles.input, errors.district && styles.errorBorder]}
+          autoCapitalize="sentences"
+          autoCorrect={false}
+          selectionColor={"#823d0c"}
+          placeholder="İlçe"
+          placeholderTextColor={"black"}
+          onChangeText={(text) => setDistrict(text)}
+        />
+        <TextInput
+          style={[styles.input, errors.address && styles.errorBorder]}
+          autoCapitalize="sentences"
+          autoCorrect={false}
+          selectionColor={"#823d0c"}
+          placeholder="Adres"
+          placeholderTextColor={"black"}
+          onChangeText={(text) => setAddress(text)}
+        />
+        <TextInput
+          style={[styles.input, errors.postalCode && styles.errorBorder]}
+          autoCapitalize="sentences"
+          autoCorrect={false}
+          selectionColor={"#823d0c"}
+          keyboardType="numeric"
+          placeholder="Posta Kodu"
+          placeholderTextColor={"black"}
+          onChangeText={(text) => setPostalCode(text)}
+        />
+
+        <View style={styles.subtitle}>
+          <Text style={styles.subtitleText}>Hesabınız var mı?</Text>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => {
+              navigation.navigate("login");
+            }}
+          >
+            <Text style={styles.subtitleText}>Giriş Yap</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={styles.button}
+          onPress={handleSignUp}
+        >
+          <Text style={styles.buttonText}>Kayıt Ol</Text>
+        </TouchableOpacity>
+      </>
+    );
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Kayıt Ol</Text>
+      {step === 1 ? renderStepOne() : null}
+      {step === 2 ? renderStepTwo() : null}
+    </ScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
   },
   title: {
     fontSize: 53,
-    width: "100%",
     textAlign: "center",
     marginBottom: "10%",
     fontFamily: "SemiBold",
+    width: 200,
   },
   input: {
     padding: 15,
@@ -153,12 +263,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   subtitle: {
-    paddingTop: 5,
-    width: "74 %",
+    width: "74%",
     justifyContent: "space-between",
     flexDirection: "row",
   },
   subtitleText: {
     fontSize: 12,
+  },
+  errorBorder: {
+    borderColor: "red",
+    borderWidth: 1,
   },
 });

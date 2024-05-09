@@ -1,4 +1,3 @@
-import { useNavigation, useRoute } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -12,28 +11,48 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { clearCart } from "./cartAction";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 export default function PayloadScreen() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [cardName, setCardName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-
-  const route = useRoute();
-  const { user_mail } = route.params;
 
   useEffect(() => {
     StatusBar.setBackgroundColor("#fff");
     StatusBar.setBarStyle("dark-content");
   }, []);
 
+
+  const route = useRoute();
+  const { user_mail } = route.params;
+
+  const [cardName, setCardName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  const [cardNameError, setCardNameError] = useState(false);
+  const [cardNumberError, setCardNumberError] = useState(false);
+  const [expiryDateError, setExpiryDateError] = useState(false);
+  const [cvvError, setCvvError] = useState(false);
+
   const handlePayment = () => {
+    // Tüm kutucukların dolu olduğunu kontrol et
+    if (!cardName || !cardNumber || !expiryDate || !cvv) {
+      setCardNameError(!cardName);
+      setCardNumberError(!cardNumber);
+      setExpiryDateError(!expiryDate);
+      setCvvError(!cvv);
+      return;
+    }
     setTimeout(() => {
       setPaymentSuccess(true);
     }, 1000);
+  };
+
+  const handleChangeExpiryDate = (input) => {
+    setExpiryDate(formatExpiryDate(input));
   };
 
   const formatExpiryDate = (input) => {
@@ -44,46 +63,75 @@ export default function PayloadScreen() {
     return `${formatted.slice(0, 2)}/${formatted.slice(2)}`;
   };
 
-  const handleChangeExpiryDate = (input) => {
-    setExpiryDate(formatExpiryDate(input));
+  const handleInputFocus = (input) => {
+    switch (input) {
+      case "cardName":
+        setCardNameError(false);
+        break;
+      case "cardNumber":
+        setCardNumberError(false);
+        break;
+      case "expiryDate":
+        setExpiryDateError(false);
+        break;
+      case "cvv":
+        setCvvError(false);
+        break;
+      default:
+        break;
+    }
   };
+
+  const maskCardNumber = (input) => {
+    let formatted = input.replace(/\D/g, "").slice(0, 16);
+    if (formatted.length > 4) {
+      formatted = formatted.match(/.{1,4}/g).join("-");
+    }
+    setCardNumber(formatted);
+  };
+  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Kart Bilgileri</Text>
       <View style={styles.card}>
         <TextInput
-          style={styles.input}
+          style={[styles.input, cardNameError && styles.inputError]}
           placeholder="Kart Üzerindeki İsim"
           value={cardName}
           onChangeText={setCardName}
+          onFocus={() => handleInputFocus("cardName")}
           selectionColor={"#823d0c"}
         />
         <TextInput
-          style={styles.input}
+          style={[styles.input, cardNumberError && styles.inputError]}
           placeholder="Kart Numarası"
-          keyboardType="numeric"
           value={cardNumber}
-          onChangeText={setCardNumber}
+          onChangeText={maskCardNumber}
+          onFocus={() => handleInputFocus("cardNumber")}
           selectionColor={"#823d0c"}
+          keyboardType="numeric"
         />
         <View style={styles.row}>
           <TextInput
-            style={[styles.input, styles.halfInput]}
+            style={[styles.input, styles.halfInput, expiryDateError && styles.inputError]}
             placeholder="MM/YY"
             value={expiryDate}
             onChangeText={handleChangeExpiryDate}
             maxLength={5}
-            keyboardType="numeric"
+            onFocus={() => handleInputFocus("expiryDate")}
             selectionColor={"#823d0c"}
+            keyboardType="numeric"
           />
           <TextInput
-            style={[styles.input, styles.halfInput]}
+            style={[styles.input, styles.halfInput, cvvError && styles.inputError]}
             placeholder="CVV"
-            keyboardType="numeric"
             value={cvv}
             onChangeText={setCvv}
+            onFocus={() => handleInputFocus("cvv")}
             selectionColor={"#823d0c"}
+            keyboardType="numeric"
+            maxLength={3}
           />
         </View>
         <TouchableOpacity
@@ -147,6 +195,9 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     padding: 10,
     marginBottom: 10,
+  },
+  inputError: {
+    borderColor: "red",
   },
   row: {
     flexDirection: "row",

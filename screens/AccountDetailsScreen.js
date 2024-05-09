@@ -1,3 +1,4 @@
+import React, { useCallback, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,12 +7,12 @@ import {
   View,
   Alert,
 } from "react-native";
-import React, { useCallback, useState } from "react";
 import { useFonts } from "expo-font";
 import PastOrderBar from "../components/PastOrderBar";
 import { useRoute } from "@react-navigation/native";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore"; // getDoc eklenmeli
 import { db } from "../firebase";
+import { TextInputMask } from "react-native-masked-text";
 
 export default function AccountDetailsScreen() {
   const [sehir, setSehir] = useState("");
@@ -28,15 +29,26 @@ export default function AccountDetailsScreen() {
     SemiBold: require("../assets/fonts/Caveat-SemiBold.ttf"),
   });
 
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded || fontError) {
-      await SplashScreen.hideAsync();
+  useEffect(() => {
+    async function fetchUserData() {
+      try {
+        const docRef = doc(db, "Kullanicilar", user_mail);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setSehir(data.city || "");
+          setIlce(data.district || "");
+          setMahalle(data.adress || "");
+          setPostaKodu(data.postalCode || "");
+          setTelefon(data.phone || "");
+        }
+      } catch (error) {
+        console.error("Hata:", error);
+      }
     }
-  }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded && !fontError) {
-    return null;
-  }
+    fetchUserData();
+  }, [user_mail]);
 
   const update = async () => {
     try {
@@ -55,6 +67,9 @@ export default function AccountDetailsScreen() {
     }
   };
 
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -67,6 +82,7 @@ export default function AccountDetailsScreen() {
         placeholder="Şehir"
         selectionColor={"#823d0c"}
         placeholderTextColor={"black"}
+        value={sehir}
         onChangeText={(text) => setSehir(text)}
       />
       <TextInput
@@ -76,6 +92,7 @@ export default function AccountDetailsScreen() {
         selectionColor={"#823d0c"}
         placeholder="İlçe"
         placeholderTextColor={"black"}
+        value={ilce}
         onChangeText={(text) => setIlce(text)}
       />
       <TextInput
@@ -85,6 +102,7 @@ export default function AccountDetailsScreen() {
         selectionColor={"#823d0c"}
         placeholder="Mahalle"
         placeholderTextColor={"black"}
+        value={mahalle}
         onChangeText={(text) => setMahalle(text)}
       />
       <TextInput
@@ -95,17 +113,23 @@ export default function AccountDetailsScreen() {
         keyboardType="phone-pad"
         placeholder="Posta Kodu"
         placeholderTextColor={"black"}
+        value={postaKodu}
         onChangeText={(text) => setPostaKodu(text)}
       />
-      <TextInput
+      <TextInputMask
         style={styles.input}
-        autoCapitalize="none"
-        autoCorrect={false}
-        selectionColor={"#823d0c"}
-        keyboardType="phone-pad"
         placeholder="Telefon Numarası"
         placeholderTextColor={"black"}
-        onChangeText={(text) => setTelefon(text)}
+        selectionColor={"#823d0c"}
+        keyboardType="phone-pad"
+        type={"custom"}
+        options={{
+          mask: "0 (999) 999-9999",
+        }}
+        value={telefon}
+        onChangeText={(formatted, extracted) => {
+          setTelefon(extracted);
+        }}
       />
 
       <TouchableOpacity
