@@ -13,7 +13,6 @@ import { Entypo } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import FilterBar from "../components/FilterBar";
 import { useFonts } from "expo-font";
-import favourite from "../data/favourite_data";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useNavigation, useRoute } from "@react-navigation/native";

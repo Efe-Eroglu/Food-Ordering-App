@@ -2,9 +2,8 @@ import { StyleSheet, Text, View, StatusBar, Platform } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 
-
-import { Provider } from 'react-redux'; // Redux'u ekleyin
-import store from './screens/store';
+import { Provider } from "react-redux"; // Redux'u ekleyin
+import store from "./screens/store";
 
 import RegisterScreen from "./screens/RegisterScreen";
 import UserLoginScreen from "./screens/UserLoginScreen";
@@ -19,6 +18,7 @@ import AccountDetailsScreen from "./screens/AccountDetailsScreen";
 import PastOrdersScreen from "./screens/PastOrdersScreen";
 import HelpScreen from "./screens/HelpScreen";
 import RestaurantMenu from "./screens/RestaurantMenu";
+import PayloadScreen from "./screens/PayloadScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -96,6 +96,11 @@ export default function App() {
           <Stack.Screen
             name="restoranMenu"
             component={RestaurantMenu}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="odeme"
+            component={PayloadScreen}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

@@ -4,6 +4,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 import React, { useCallback, useState } from "react";
 import { useFonts } from "expo-font";
@@ -46,9 +47,11 @@ export default function AccountDetailsScreen() {
         postalCode: postaKodu,
         phone: telefon,
       });
+      Alert.alert("Başarılı", "Bilgiler başarıyla güncellendi.");
       console.log("Kullanıcı bilgi güncelledi", user_mail);
     } catch (error) {
       console.error("Hata:", error);
+      Alert.alert("Hata", "Bilgiler güncellenirken bir hata oluştu.");
     }
   };
 

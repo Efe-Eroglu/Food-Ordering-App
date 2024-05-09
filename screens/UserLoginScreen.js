@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -6,11 +6,11 @@ import {
   Text,
   View,
   StatusBar,
+  Alert,
 } from "react-native";
 import { useFonts } from "expo-font";
 import { useNavigation } from "@react-navigation/native";
 import { auth, db } from "../firebase";
-import { collection, doc, getDoc, getDocs, query } from "firebase/firestore";
 
 export default function UserLoginScreen() {
   const navigation = useNavigation();
@@ -22,16 +22,6 @@ export default function UserLoginScreen() {
 
   const [user_email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [income, setIncome] = useState(null);
-
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        navigation.navigate("home", {user_mail:user.email});
-        console.log("User mail :Ç ",user.email);
-      }
-    });
-  }, []);
 
   const [fontsLoaded] = useFonts({
     Medium: require("../assets/fonts/Caveat-Medium.ttf"),
@@ -41,31 +31,22 @@ export default function UserLoginScreen() {
 
   const handleLogin = async () => {
     try {
-      const userDocRef = doc(db, "Kullanicilar", user_email);
-      const userDocSnapshot = await getDoc(userDocRef);
-
-      if (!userDocSnapshot.exists()) {
-        console.log("Kullanıcı belgesi bulunamadı.");
-      } else {
-        setIncome(userDocSnapshot.data());
-      }
+      const userCredentials = await auth.signInWithEmailAndPassword(
+        user_email,
+        password
+      );
+      const user = userCredentials.user;
+      console.log("Kullanıcı giriş yaptı", user.email);
+      navigation.navigate("home", { user_mail: user.email });
     } catch (error) {
-      console.error("Belge alınırken hata oluştu: ", error);
+      console.error("Giriş hatası: ", error);
+      Alert.alert("Hata", "Giriş yapılırken bir hata oluştu.");
     }
-
-    auth
-      .signInWithEmailAndPassword(user_email, password)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        console.log("Kullanıcı giriş yaptı", user.email);
-      })
-      .catch((error) => alert(error.message));
   };
 
   if (!fontsLoaded) {
     return null;
   }
-
 
   return (
     <View style={styles.container}>

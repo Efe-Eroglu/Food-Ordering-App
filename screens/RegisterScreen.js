@@ -36,6 +36,7 @@ export default function RegisterScreen() {
         cart:[],
       });
       console.log("Kullanıcı kayıt oldu", user.email);
+      navigation.navigate("home",{user_mail:email})
     } catch (error) {
       alert(error.message);
     }

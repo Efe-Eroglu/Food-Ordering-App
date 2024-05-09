@@ -5,9 +5,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../screens/cartAction';
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
+import * as Animatable from 'react-native-animatable';
 
-export default function Products({ user_mail, restauran_name }) {
+const Products = ({ user_mail, restauran_name }) => {
   const [products, setProducts] = useState([]);
+  const [notification, setNotification] = useState(null);
   const dispatch = useDispatch();
   const cart = useSelector(state => state.cart.cart);
 
@@ -16,7 +18,7 @@ export default function Products({ user_mail, restauran_name }) {
       const querySnapshot = await getDocs(collection(db, restauran_name));
       const fetchedProducts = [];
       querySnapshot.forEach((doc) => {
-        fetchedProducts.push({ id: doc.id, ...doc.data() });
+        fetchedProducts.push({ id: doc.id, ...doc.data(), quantity: 0 });
       });
       setProducts(fetchedProducts);
     };
@@ -37,7 +39,7 @@ export default function Products({ user_mail, restauran_name }) {
           <TouchableOpacity
             style={styles.button}
             activeOpacity={0.8}
-            onPress={() => dispatch(addToCart(item))}
+            onPress={() => addToCartHandler(item)}
           >
             <AntDesign name="plus" size={18} color="white" />
           </TouchableOpacity>
@@ -45,6 +47,28 @@ export default function Products({ user_mail, restauran_name }) {
       </View>
     </View>
   );
+
+  const addToCartHandler = (item) => {
+    const existingItem = cart.find((cartItem) => cartItem.id === item.id);
+    if (existingItem) {
+      existingItem.quantity++;
+    } else {
+      item.quantity = 1;
+      dispatch(addToCart(item));
+    }
+    setNotification(`${item.name} başarıyla sepete eklendi.`);
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); // 3 saniye sonra bildirimi kaldır
+  };
+
+  const Notification = () => {
+    return (
+      <Animatable.View animation="slideInUp" duration={1000} style={styles.notification}>
+        <Text style={styles.notificationText}>{notification}</Text>
+      </Animatable.View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -54,9 +78,10 @@ export default function Products({ user_mail, restauran_name }) {
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
       />
+      {notification && <Notification />}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -114,4 +139,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 5,
   },
+  quantity: {
+    fontSize: 12,
+    color: "gray",
+    marginTop: 5,
+  },
+  notification: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    padding: 10,
+    borderRadius: 5,
+  },
+  notificationText: {
+    color: "#fff",
+    textAlign: "center",
+  },
 });
+
+export default Products;

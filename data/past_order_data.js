@@ -6,4 +6,4 @@ const past_orders = [
     { id: "12", image: require("../assets/mockup3.jpg") , name:"Gros Burger", rating:4.4},
   ];
   
-  export default past_orders;
+  export default past_orders; 

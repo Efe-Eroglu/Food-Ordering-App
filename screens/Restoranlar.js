@@ -10,7 +10,6 @@ import {
 import React, { useEffect, useState } from "react";
 import Bar from "../components/Bar";
 import { Entypo } from "@expo/vector-icons";
-import restaurants_data from "../data/restaurants_data";
 import { FontAwesome } from "@expo/vector-icons";
 import FilterBar from "../components/FilterBar";
 import { db } from "../firebase";

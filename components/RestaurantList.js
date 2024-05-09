@@ -9,7 +9,6 @@ import {
   Platform,
 } from "react-native";
 import { Entypo } from "@expo/vector-icons";
-import popular_data from "../data/popular_restaurants_data";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
