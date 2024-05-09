@@ -78,7 +78,6 @@ export default function RestaurantList({user_mail}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    
   },
   restaurant: {
     width: 300,

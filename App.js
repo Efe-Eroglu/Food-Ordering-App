@@ -19,6 +19,7 @@ import PastOrdersScreen from "./screens/PastOrdersScreen";
 import HelpScreen from "./screens/HelpScreen";
 import RestaurantMenu from "./screens/RestaurantMenu";
 import PayloadScreen from "./screens/PayloadScreen";
+import Coupons from "./screens/Coupons";
 
 const Stack = createNativeStackNavigator();
 
@@ -101,6 +102,11 @@ export default function App() {
           <Stack.Screen
             name="odeme"
             component={PayloadScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="kupon"
+            component={Coupons}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

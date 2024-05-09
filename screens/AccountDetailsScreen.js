@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   View,
   Alert,
+  StatusBar,
 } from "react-native";
 import { useFonts } from "expo-font";
 import PastOrderBar from "../components/PastOrderBar";
 import { useRoute } from "@react-navigation/native";
-import { doc, getDoc, updateDoc } from "firebase/firestore"; // getDoc eklenmeli
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { TextInputMask } from "react-native-masked-text";
 
@@ -28,6 +29,11 @@ export default function AccountDetailsScreen() {
     Medium: require("../assets/fonts/Caveat-Medium.ttf"),
     SemiBold: require("../assets/fonts/Caveat-SemiBold.ttf"),
   });
+
+  useEffect(() => {
+    StatusBar.setBackgroundColor("#ad3103");
+    StatusBar.setBarStyle("light-content");
+  }, []);
 
   useEffect(() => {
     async function fetchUserData() {
@@ -161,7 +167,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(222, 105, 22,0.3)",
   },
   button: {
-    backgroundColor: "#ad581c",
+    backgroundColor: "#ad3103",
     padding: 13,
     borderRadius: 15,
     marginTop: 10,

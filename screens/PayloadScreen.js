@@ -12,6 +12,9 @@ import {
 import { useDispatch } from "react-redux";
 import { clearCart } from "./cartAction";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { db } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function PayloadScreen() {
   const navigation = useNavigation();
@@ -21,7 +24,6 @@ export default function PayloadScreen() {
     StatusBar.setBackgroundColor("#fff");
     StatusBar.setBarStyle("dark-content");
   }, []);
-
 
   const route = useRoute();
   const { user_mail } = route.params;
@@ -36,9 +38,9 @@ export default function PayloadScreen() {
   const [cardNumberError, setCardNumberError] = useState(false);
   const [expiryDateError, setExpiryDateError] = useState(false);
   const [cvvError, setCvvError] = useState(false);
+  const [cardNumberLengthError, setCardNumberLengthError] = useState(false);
 
   const handlePayment = () => {
-    // Tüm kutucukların dolu olduğunu kontrol et
     if (!cardName || !cardNumber || !expiryDate || !cvv) {
       setCardNameError(!cardName);
       setCardNumberError(!cardNumber);
@@ -46,9 +48,33 @@ export default function PayloadScreen() {
       setCvvError(!cvv);
       return;
     }
+
+    const isValidExpiryDate = expiryDate.match(/^\d{2}\/\d{2}$/);
+    const isValidCvv = cvv.match(/^\d{3}$/);
+    const isValidCardNumber = validateCardNumber(cardNumber.replace(/\D/g, ""));
+
+    if (!isValidExpiryDate) {
+      setExpiryDateError(true);
+      return;
+    }
+
+    if (!isValidCvv) {
+      setCvvError(true);
+      return;
+    }
+
+    if (!isValidCardNumber) {
+      setCardNumberLengthError(true);
+      return;
+    }
+
     setTimeout(() => {
       setPaymentSuccess(true);
     }, 1000);
+  };
+
+  const validateCardNumber = (input) => {
+    return input.length === 16;
   };
 
   const handleChangeExpiryDate = (input) => {
@@ -70,6 +96,7 @@ export default function PayloadScreen() {
         break;
       case "cardNumber":
         setCardNumberError(false);
+        setCardNumberLengthError(false);
         break;
       case "expiryDate":
         setExpiryDateError(false);
@@ -83,18 +110,29 @@ export default function PayloadScreen() {
   };
 
   const maskCardNumber = (input) => {
-    let formatted = input.replace(/\D/g, "").slice(0, 16);
+    let formatted = input.replace(/\D/g, "").slice(0, 19);
     if (formatted.length > 4) {
       formatted = formatted.match(/.{1,4}/g).join("-");
     }
     setCardNumber(formatted);
   };
-  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Kart Bilgileri</Text>
+
       <View style={styles.card}>
+        <Text style={styles.icons}>
+          <Icon name="cc-visa" size={30} color="#000" />{"    "}
+          <Icon name="cc-mastercard" size={30} color="#000" />{"    "}
+          <Icon name="cc-amex" size={30} color="#000" />{"   "}
+          <Icon name="cc-paypal" size={30} color="#000" /> {"   "}
+          <Icon name="cc-discover" size={30} color="#000" />{"   "}
+          <Icon name="cc-jcb" size={30} color="#000" />
+          
+          
+        </Text>
+
         <TextInput
           style={[styles.input, cardNameError && styles.inputError]}
           placeholder="Kart Üzerindeki İsim"
@@ -104,17 +142,26 @@ export default function PayloadScreen() {
           selectionColor={"#823d0c"}
         />
         <TextInput
-          style={[styles.input, cardNumberError && styles.inputError]}
+          style={[
+            styles.input,
+            cardNumberError && styles.inputError,
+            cardNumberLengthError && styles.inputError,
+          ]}
           placeholder="Kart Numarası"
           value={cardNumber}
           onChangeText={maskCardNumber}
           onFocus={() => handleInputFocus("cardNumber")}
           selectionColor={"#823d0c"}
           keyboardType="numeric"
+          maxLength={19}
         />
         <View style={styles.row}>
           <TextInput
-            style={[styles.input, styles.halfInput, expiryDateError && styles.inputError]}
+            style={[
+              styles.input,
+              styles.halfInput,
+              expiryDateError && styles.inputError,
+            ]}
             placeholder="MM/YY"
             value={expiryDate}
             onChangeText={handleChangeExpiryDate}
@@ -124,7 +171,10 @@ export default function PayloadScreen() {
             keyboardType="numeric"
           />
           <TextInput
-            style={[styles.input, styles.halfInput, cvvError && styles.inputError]}
+            style={[
+              styles.input,
+              styles.halfInput,
+              cvvError && styles.inputError]}
             placeholder="CVV"
             value={cvv}
             onChangeText={setCvv}
@@ -156,7 +206,7 @@ export default function PayloadScreen() {
                 onPress={() => {
                   setPaymentSuccess(false);
                   dispatch(clearCart());
-                  navigation.navigate("home",{user_mail:user_mail})
+                  navigation.navigate("home", { user_mail: user_mail });
                 }}
               >
                 <Text style={styles.closeButtonText}>Kapat</Text>
@@ -205,7 +255,7 @@ const styles = StyleSheet.create({
   },
   halfInput: {
     flex: 1,
-    marginRight: 10,
+    marginRight:5,
   },
   button: {
     backgroundColor: "#d9440d",
@@ -247,4 +297,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 13,
   },
+  icons:{
+    marginBottom:10
+  }
 });

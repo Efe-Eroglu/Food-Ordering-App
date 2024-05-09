@@ -7,15 +7,27 @@ import {
   Image,
   TouchableOpacity,
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { removeFromCart, decreaseQuantity, increaseQuantity } from "./cartAction";
+import {
+  removeFromCart,
+  decreaseQuantity,
+  increaseQuantity,
+} from "./cartAction";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { Ionicons } from "@expo/vector-icons";
+import PastOrderBar from "../components/PastOrderBar";
 
 export default function CartScreen() {
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const [userCoupons, setUserCoupons] = useState([]);
+  const [selectedCouponIndex, setSelectedCouponIndex] = useState(null);
+  const [couponSectionOpen, setCouponSectionOpen] = useState(false);
 
   useEffect(() => {
     StatusBar.setBackgroundColor("#ad3103");
@@ -31,7 +43,7 @@ export default function CartScreen() {
   const removeItem = (id) => {
     dispatch(removeFromCart(id));
   };
- 
+
   const decreaseItemQuantity = (id) => {
     dispatch(decreaseQuantity(id));
   };
@@ -45,11 +57,31 @@ export default function CartScreen() {
       return 0;
     }
 
-    const totalPrice = cartItems.reduce(
+    return cartItems.reduce(
       (total, item) => total + parseFloat(item.price) * item.quantity,
       0
     );
-    return totalPrice;
+  };
+
+  const getDiscountedPrice = () => {
+    let discountedPrice = getTotalPrice();
+    let discountValue = 0;
+
+    if (selectedCouponIndex !== null) {
+      discountValue = parseFloat(userCoupons[selectedCouponIndex]);
+      discountedPrice -= discountValue;
+    }
+
+    discountedPrice = Math.max(discountedPrice, 50);
+
+    if (discountedPrice === 50) {
+      discountValue = getTotalPrice() - 50;
+    }
+
+    return {
+      discountedPrice,
+      discountValue,
+    };
   };
 
   const renderItem = ({ item }) => (
@@ -62,9 +94,11 @@ export default function CartScreen() {
       <View style={styles.itemInfo}>
         <Text style={styles.itemName}>{item.name}</Text>
         <Text style={styles.itemContent}>{item.content.join(", ")}</Text>
+        <Text style={styles.itemPrice}>
+          Ürün Fiyatı: {parseFloat(item.price).toFixed(2)}₺
+        </Text>
       </View>
       <View style={styles.itemRight}>
-        <Text style={styles.itemPrice}>{item.price}₺</Text>
         <View style={styles.itemQuantityContainer}>
           <TouchableOpacity
             style={styles.quantityButton}
@@ -88,21 +122,41 @@ export default function CartScreen() {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      navigation.navigate('odeme', { user_mail: user_mail });
-    }, 2000); 
+      navigation.navigate("odeme", { user_mail: user_mail });
+    }, 2000);
   };
 
   const returnToHomePage = () => {
-    navigation.navigate('home', { user_mail: user_mail });
+    navigation.navigate("home", { user_mail: user_mail });
   };
+
+  useEffect(() => {
+    async function fetchUserCoupon() {
+      try {
+        const docRef = doc(db, "Kullanicilar", user_mail);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const coupon = data.coupon;
+          setUserCoupons(coupon);
+        }
+      } catch (error) {
+        console.log("Hata: ", error);
+      }
+    }
+    fetchUserCoupon();
+  }, [user_mail]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sepet Ürünleri</Text>
-      {loading ? ( 
+      <PastOrderBar title={"Sepet"} user_mail={user_mail} />
+
+      {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#d9440d" />
-          <Text style={styles.loadingText}>Ödeme Ekranına Yönlendiriliyorsunuz...</Text>
+          <Text style={styles.loadingText}>
+            Ödeme Ekranına Yönlendiriliyorsunuz...
+          </Text>
         </View>
       ) : (
         <>
@@ -110,6 +164,7 @@ export default function CartScreen() {
             <View style={styles.emptyCartContainer}>
               <Text style={styles.emptyCartText}>Sepetiniz şu anda boş.</Text>
               <TouchableOpacity
+                activeOpacity={0.8}
                 onPress={returnToHomePage}
                 style={styles.returnButton}
               >
@@ -117,26 +172,89 @@ export default function CartScreen() {
               </TouchableOpacity>
             </View>
           ) : (
-            <FlatList
-              data={cartItems}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
-              showsVerticalScrollIndicator={false}
-            />
+            <View style={{flex:1}}>
+              <Text style={[styles.title, { paddingLeft: 10 }]}>
+                Sepet Ürünleri
+              </Text>
+              <FlatList
+                data={cartItems}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                showsVerticalScrollIndicator={false}
+              />
+            </View>
           )}
 
           {cartItems.length > 0 && (
-            <View style={styles.totalContainer}>
+            <View style={[styles.couponContainer, { paddingHorizontal: 10 }]}>
+              <TouchableOpacity
+                style={styles.couponHeader}
+                onPress={() => setCouponSectionOpen(!couponSectionOpen)}
+              >
+                <Text style={styles.couponTitle}>Kuponlarınız</Text>
+                <Text style={styles.couponToggle}>
+                  {couponSectionOpen ? "▼" : "▲"}
+                </Text>
+              </TouchableOpacity>
+              {couponSectionOpen && (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.couponScrollContainer}
+                >
+                  {userCoupons.map((coupon, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.couponItem,
+                        selectedCouponIndex === index && {
+                          backgroundColor: "green",
+                        },
+                      ]}
+                      onPress={() => {
+                        if (selectedCouponIndex === index) {
+                          setSelectedCouponIndex(null);
+                        } else {
+                          setSelectedCouponIndex(index);
+                        }
+                      }}
+                    >
+                      <Text style={styles.couponText}>
+                        {coupon + "₺\nİndirim"}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              )}
+            </View>
+          )}
+
+          {cartItems.length > 0 && (
+            <View style={[styles.totalContainer, { paddingHorizontal: 10 }]}>
               <Text style={styles.totalText}>
                 Toplam: {getTotalPrice().toFixed(2)}₺
               </Text>
-              <TouchableOpacity
-                onPress={handleCheckout}
-                style={styles.checkoutButton}
-              >
-                <Text style={styles.checkoutButtonText}>Ödeme Yap</Text>
-              </TouchableOpacity>
+              {selectedCouponIndex !== null && (
+                <>
+                  <Text style={styles.discountText}>
+                    İndirim: -{getDiscountedPrice().discountValue.toFixed(2)}₺
+                  </Text>
+                  <Text style={styles.totalWithDiscountText}>
+                    İndirimli Toplam:{" "}
+                    {getDiscountedPrice().discountedPrice.toFixed(2)}₺
+                  </Text>
+                </>
+              )}
             </View>
+          )}
+
+          {cartItems.length > 0 && (
+            <TouchableOpacity
+              onPress={handleCheckout}
+              style={[styles.checkoutButton, { paddingHorizontal: 10 }]}
+            >
+              <Text style={styles.checkoutButtonText}>Ödeme Yap</Text>
+            </TouchableOpacity>
           )}
         </>
       )}
@@ -148,7 +266,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 10,
   },
   title: {
     fontSize: 20,
@@ -157,8 +274,8 @@ const styles = StyleSheet.create({
   },
   emptyCartContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   emptyCartText: {
     fontSize: 16,
@@ -184,6 +301,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
+    paddingHorizontal: 10,
   },
   itemImage: {
     width: 80,
@@ -200,14 +318,18 @@ const styles = StyleSheet.create({
   itemContent: {
     color: "gray",
   },
-  itemRight: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
   itemPrice: {
     fontWeight: "bold",
     fontSize: 16,
-    marginRight: 10,
+  },
+  discountedPrice: {
+    fontWeight: "bold",
+    fontSize: 16,
+    color: "green",
+  },
+  itemRight: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   itemQuantityContainer: {
     flexDirection: "row",
@@ -232,17 +354,29 @@ const styles = StyleSheet.create({
   totalContainer: {
     alignItems: "flex-end",
     marginTop: 10,
+    paddingHorizontal: 10,
   },
   totalText: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  discountText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "red",
+  },
+  totalWithDiscountText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "green",
   },
   checkoutButton: {
     backgroundColor: "#d9440d",
     padding: 15,
     borderRadius: 20,
     marginTop: 10,
-    width: "100%",
+    width: "95%",
+    alignSelf: "center",
   },
   checkoutButtonText: {
     color: "#fff",
@@ -252,12 +386,50 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+  },
+  couponContainer: {
+    borderTopWidth: 1,
+    borderTopColor: "silver",
+    paddingTop: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: "silver",
+    paddingBottom: 10,
+  },
+  couponHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+    marginLeft: 8,
+  },
+  couponTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  couponToggle: {
+    fontSize: 20,
+  },
+  couponScrollContainer: {
+    flexGrow: 1,
+    flexDirection: "row",
+  },
+  couponItem: {
+    backgroundColor: "gray",
+    padding: 25,
+    marginBottom: 5,
+    marginHorizontal: 5,
+    borderRadius: 15,
+  },
+  couponText: {
+    fontSize: 12,
+    color: "#fff",
+    textAlign: "center",
   },
 });

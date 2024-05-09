@@ -1,4 +1,4 @@
-import {
+  import {
   StyleSheet,
   Text,
   View,
