@@ -104,6 +104,8 @@ const styles = StyleSheet.create({
     fontSize: 53,
     marginBottom: 50,
     fontFamily: "SemiBold",
+    width:"100%",
+    textAlign:"center"
   },
   container: {
     backgroundColor: "white",

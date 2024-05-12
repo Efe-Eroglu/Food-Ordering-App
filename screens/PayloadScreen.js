@@ -129,8 +129,6 @@ export default function PayloadScreen() {
           <Icon name="cc-paypal" size={30} color="#000" /> {"   "}
           <Icon name="cc-discover" size={30} color="#000" />{"   "}
           <Icon name="cc-jcb" size={30} color="#000" />
-          
-          
         </Text>
 
         <TextInput

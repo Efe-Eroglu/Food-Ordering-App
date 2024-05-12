@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  StatusBar,
+} from "react-native";
 import { useRoute } from "@react-navigation/native";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import PastOrderBar from "../components/PastOrderBar";
-import { Fontisto } from '@expo/vector-icons';
+import { Fontisto } from "@expo/vector-icons";
 
 export default function Coupons() {
   const route = useRoute();
@@ -15,7 +22,6 @@ export default function Coupons() {
     StatusBar.setBackgroundColor("#ad3103");
     StatusBar.setBarStyle("light-content");
   }, []);
-
 
   useEffect(() => {
     async function fetchUserCoupon() {
@@ -36,8 +42,9 @@ export default function Coupons() {
 
   const renderCouponItem = ({ item }) => (
     <TouchableOpacity style={styles.couponContainer} activeOpacity={0.9}>
-      <Text style={styles.couponText}>{item + "₺ İndirim  "}
-      <Fontisto name="ticket" size={20} color="gray" />
+      <Text style={styles.couponText}>
+        {item + "₺ İndirim  "}
+        <Fontisto name="ticket" size={20} color="gray" />
       </Text>
       <Text style={styles.minAmount}>Minimum sepet tutarı 50 TL'dir</Text>
     </TouchableOpacity>
@@ -46,19 +53,24 @@ export default function Coupons() {
   return (
     <View style={styles.container}>
       <PastOrderBar title={"Kuponlar"} user_mail={user_mail} />
-      <Text style={styles.header}>Size Özel Kuponlar</Text>
       {userCoupons.length > 0 ? (
-        <FlatList
-          data={userCoupons}
-          renderItem={renderCouponItem}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={styles.listContainer}
-        />
+        <View style={styles.container}>
+          <Text style={styles.header}>Size Özel Kuponlar</Text>
+
+          <FlatList
+            data={userCoupons}
+            renderItem={renderCouponItem}
+            keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle={styles.listContainer}
+          />
+        </View>
       ) : (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>Henüz kuponunuz bulunmamaktadır.</Text>
           <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Yeni Kupon Ekle</Text>
+            <Text style={styles.buttonText}>
+              Kupon Kazanmak İçin Sipariş Ver
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -68,15 +80,15 @@ export default function Coupons() {
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     backgroundColor: "#fff",
   },
   header: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    marginHorizontal:20,
-    marginTop:10
+    marginHorizontal: 20,
+    marginTop: 10,
   },
   listContainer: {
     flexGrow: 1,
@@ -86,7 +98,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f2f2f2",
     marginBottom: 10,
     borderRadius: 10,
-    marginHorizontal:20
+    marginHorizontal: 20,
   },
   couponText: {
     fontSize: 18,
@@ -105,8 +117,8 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    fontStyle: "italic",
     marginBottom: 20,
+    textAlign: "center",
   },
   button: {
     backgroundColor: "#007bff",
@@ -116,7 +128,9 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
+    maxWidth: 150,
+    textAlign: "center",
   },
 });

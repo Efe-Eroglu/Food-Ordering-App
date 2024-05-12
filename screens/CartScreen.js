@@ -17,7 +17,7 @@ import {
   increaseQuantity,
 } from "./cartAction";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Ionicons } from "@expo/vector-icons";
 import PastOrderBar from "../components/PastOrderBar";
@@ -28,6 +28,7 @@ export default function CartScreen() {
   const [userCoupons, setUserCoupons] = useState([]);
   const [selectedCouponIndex, setSelectedCouponIndex] = useState(null);
   const [couponSectionOpen, setCouponSectionOpen] = useState(false);
+  const [keysMap, setKeysMap] = useState({});
 
   useEffect(() => {
     StatusBar.setBackgroundColor("#ad3103");
@@ -84,46 +85,95 @@ export default function CartScreen() {
     };
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Image
-        source={{ uri: item.img }}
-        style={styles.itemImage}
-        resizeMode="cover"
-      />
-      <View style={styles.itemInfo}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemContent}>{item.content.join(", ")}</Text>
-        <Text style={styles.itemPrice}>
-          Ürün Fiyatı: {parseFloat(item.price).toFixed(2)}₺
-        </Text>
-      </View>
-      <View style={styles.itemRight}>
-        <View style={styles.itemQuantityContainer}>
-          <TouchableOpacity
-            style={styles.quantityButton}
-            onPress={() => decreaseItemQuantity(item.id)}
-          >
-            <Text style={styles.quantityButtonText}>-</Text>
-          </TouchableOpacity>
-          <Text style={styles.quantityText}>{item.quantity}</Text>
-          <TouchableOpacity
-            style={styles.quantityButton}
-            onPress={() => increaseItemQuantity(item.id)}
-          >
-            <Text style={styles.quantityButtonText}>+</Text>
-          </TouchableOpacity>
+  const renderItem = ({ item, index }) => {
+    const key = generateUniqueId(index);
+
+    return (
+      <View key={key} style={styles.itemContainer}>
+        <Image
+          source={{ uri: item.img }}
+          style={styles.itemImage}
+          resizeMode="cover"
+        />
+        <View style={styles.itemInfo}>
+          <Text style={styles.itemName}>{item.name}</Text>
+          <Text style={styles.itemContent}>{item.content.join(", ")}</Text>
+          <Text style={styles.itemPrice}>
+            Ürün Fiyatı: {parseFloat(item.price).toFixed(2)}₺
+          </Text>
+        </View>
+        <View style={styles.itemRight}>
+          <View style={styles.itemQuantityContainer}>
+            <TouchableOpacity
+              style={styles.quantityButton}
+              onPress={() => decreaseItemQuantity(item.id)}
+            >
+              <Text style={styles.quantityButtonText}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.quantityText}>{item.quantity}</Text>
+            <TouchableOpacity
+              style={styles.quantityButton}
+              onPress={() => increaseItemQuantity(item.id)}
+            >
+              <Text style={styles.quantityButtonText}>+</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     setLoading(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       setLoading(false);
-      navigation.navigate("odeme", { user_mail: user_mail });
-    }, 2000);
+      if (selectedCouponIndex !== null) {
+        const updatedCoupons = [...userCoupons];
+        updatedCoupons.splice(selectedCouponIndex, 1);
+        setUserCoupons(updatedCoupons);
+
+        try {
+          const docRef = doc(db, "Kullanicilar", user_mail);
+          await updateDoc(docRef, {
+            coupon: updatedCoupons,
+          });
+          console.log("Kupon silindi.");
+        } catch (error) {
+          console.log("Hata: Kupon silinemedi", error);
+        }
+      }
+
+      try {
+        const now = new Date();
+        const docRef = doc(db, "Kullanicilar", user_mail);
+        const docSnap = await getDoc(docRef);
+        const userData = docSnap.data();
+
+        let pastOrders = userData.pastOrder || [];
+
+        // Tüm sepetteki ürünleri geçmiş siparişlere ekle
+        cartItems.forEach((item) => {
+          pastOrders.push({
+            ...item,
+            orderDate: now,
+            quantity: item.quantity,
+          });
+        });
+
+        await updateDoc(docRef, {
+          pastOrder: pastOrders,
+        });
+
+        console.log("Sepet içeriği pastOrder'a eklendi.");
+      } catch (error) {
+        console.log("Hata: Sepet içeriği pastOrder'a eklenemedi", error);
+      }
+
+      navigation.navigate("odeme", {
+        user_mail: user_mail,
+        paymentSuccess: true, // Ödeme başarılı olduğunu belirtmek için
+      });
+    }, 1000);
   };
 
   const returnToHomePage = () => {
@@ -146,6 +196,19 @@ export default function CartScreen() {
     }
     fetchUserCoupon();
   }, [user_mail]);
+
+  const generateUniqueId = (index) => {
+    const key = `${index}_${Date.now()}`;
+    if (keysMap[key]) {
+      return generateUniqueId(index + 1);
+    }
+    setKeysMap({ ...keysMap, [key]: true });
+    return key;
+  };
+
+  useEffect(() => {
+    setKeysMap({});
+  }, [cartItems]);
 
   return (
     <View style={styles.container}>
@@ -172,14 +235,14 @@ export default function CartScreen() {
               </TouchableOpacity>
             </View>
           ) : (
-            <View style={{flex:1}}>
+            <View style={{ flex: 1 }}>
               <Text style={[styles.title, { paddingLeft: 10 }]}>
                 Sepet Ürünleri
               </Text>
               <FlatList
                 data={cartItems}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item, index) => `${item.name}_${index}`} // Unique key generation
                 showsVerticalScrollIndicator={false}
               />
             </View>
@@ -320,7 +383,7 @@ const styles = StyleSheet.create({
   },
   itemPrice: {
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
   },
   discountedPrice: {
     fontWeight: "bold",

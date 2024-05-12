@@ -22,6 +22,7 @@ export default function AccountDetailsScreen() {
   const [postaKodu, setPostaKodu] = useState("");
   const [telefon, setTelefon] = useState("");
 
+
   const route = useRoute();
   const { user_mail } = route.params;
 
@@ -52,7 +53,6 @@ export default function AccountDetailsScreen() {
         console.error("Hata:", error);
       }
     }
-
     fetchUserData();
   }, [user_mail]);
 

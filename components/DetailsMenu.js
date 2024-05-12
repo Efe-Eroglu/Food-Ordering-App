@@ -8,6 +8,10 @@ import {
 import React, { useEffect } from "react";
 import { auth } from "../firebase";
 import { useNavigation } from "@react-navigation/native";
+import { AntDesign } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
+import { SimpleLineIcons } from '@expo/vector-icons';
 
 export default function DetailsMenu({ email }) {
   const navigation = useNavigation();
@@ -34,7 +38,10 @@ export default function DetailsMenu({ email }) {
         activeOpacity={0.7}
         onPress={() => navigation.navigate("hesapDetay", { user_mail: email })}
       >
-        <Text style={styles.text}>Hesap Bilgilerim</Text>
+        <View style={styles.item}>
+          <AntDesign name="user" size={16} color="black" />
+          <Text style={styles.text}>Hesap Bilgilerim</Text>
+        </View>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -44,7 +51,10 @@ export default function DetailsMenu({ email }) {
           navigation.navigate("gecmisSiparis", { user_mail: email })
         }
       >
-        <Text style={styles.text}>Geçmiş Siparişlerim</Text>
+        <View style={styles.item}>
+          <AntDesign name="calendar" size={16} color="black" />
+          <Text style={styles.text}>Geçmiş Siparişlerim</Text>
+        </View>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -52,14 +62,21 @@ export default function DetailsMenu({ email }) {
         activeOpacity={0.7}
         onPress={() => navigation.navigate("kupon", { user_mail: email })}
       >
-        <Text style={styles.text}>Kuponlar</Text>
+        <View style={styles.item}>
+          <Ionicons name="ticket-outline" size={16} color="black" />
+          <Text style={styles.text}>Kuponlar</Text>
+        </View>
       </TouchableOpacity>
+
       <TouchableOpacity
         style={styles.card}
         activeOpacity={0.7}
         onPress={() => navigation.navigate("yardim", { user_mail: email })}
       >
-        <Text style={styles.text}>Yardım Merkezi</Text>
+        <View style={styles.item}>
+          <Feather name="phone-call" size={16} color="black" />
+          <Text style={styles.text}>Yardım Merkezi</Text>
+        </View>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -67,7 +84,10 @@ export default function DetailsMenu({ email }) {
         activeOpacity={0.7}
         onPress={handleSignOut}
       >
-        <Text style={styles.text}>Çıkış Yap</Text>
+        <View style={styles.item}>
+          <SimpleLineIcons name="logout" size={16} color="black" />
+          <Text style={styles.text}>Çıkış Yap</Text>
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -80,13 +100,20 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "90%",
-    alignItems: "center",
     borderBottomWidth: 1,
     borderColor: "silver",
     padding: 15,
+    justifyContent:"center",
+    alignItems:"center"
+  },
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   text: {
     fontWeight: "bold",
     fontSize: 16,
+    marginLeft: 10,
+    textAlign: "center",
   },
 });
