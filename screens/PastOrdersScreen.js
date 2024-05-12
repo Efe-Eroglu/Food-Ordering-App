@@ -14,7 +14,7 @@ import PastOrderBar from "../components/PastOrderBar";
 import { db } from "../firebase";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function PastOrdersScreen() {
   const navigation = useNavigation();
@@ -29,6 +29,7 @@ export default function PastOrdersScreen() {
 
   const [pastOrders, setPastOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const fetchPastOrders = async () => {
     setLoading(true);
@@ -40,12 +41,17 @@ export default function PastOrdersScreen() {
         if (doc.exists()) {
           const data = doc.data();
           if (data.pastOrder) {
-            setPastOrders(data.pastOrder);
+            // ters çevirme işlemi burada gerçekleştiriliyor
+            setPastOrders(data.pastOrder.reverse());
           }
         }
       });
+      if (querySnapshot.empty) {
+        setError(true);
+      }
     } catch (error) {
       console.log("Error fetching past orders:", error);
+      setError(true);
     }
     setLoading(false);
   };
@@ -78,13 +84,20 @@ export default function PastOrdersScreen() {
               <View style={styles.itemNameContainer}>
                 <Text style={styles.itemName}>
                   {item.name + " "}
-                  <Text style={styles.quantity}>{"x" + item.quantity + " "}</Text>
+                  <Text style={styles.quantity}>
+                    {"x" + item.quantity + " "}
+                  </Text>
                 </Text>
                 {/* Eğer sipariş tarihinden 30 dakika geçtiyse yeşil tik göster (Teslim Edildi)*/}
                 {minutesPassed > 30 ? (
                   <Entypo name="check" size={18} color="green" />
                 ) : (
-                  <MaterialIcons name="pending" size={16} color="orange" style={styles.icon}/>
+                  <MaterialIcons
+                    name="pending"
+                    size={16}
+                    color="orange"
+                    style={styles.icon}
+                  />
                 )}
               </View>
               <View style={styles.itemContent}>
@@ -99,13 +112,9 @@ export default function PastOrdersScreen() {
                 {"Fiyat: " + item.price * item.quantity + " ₺"}
               </Text>
               <Text style={styles.orderDate}>
-                Sipariş Tarihi:{" "}
-                {orderDate.toLocaleDateString()}
+                Sipariş Tarihi: {orderDate.toLocaleDateString()}
               </Text>
             </View>
-            {/* <TouchableOpacity style={styles.button} activeOpacity={0.7}>
-              <Text style={styles.buttonText}>Değerlendir</Text>
-            </TouchableOpacity> */}
           </View>
         </View>
       </View>
@@ -119,7 +128,7 @@ export default function PastOrdersScreen() {
       <View style={styles.container}>
         {loading ? (
           <ActivityIndicator size="large" color="#d9440d" />
-        ) : pastOrders.length === 0 ? (
+        ) : error || pastOrders.length === 0 ? (
           <View style={styles.emptyCartContainer}>
             <Text style={styles.emptyText}>Geçmiş sipariş bulunamadı.</Text>
             <TouchableOpacity
@@ -127,14 +136,14 @@ export default function PastOrdersScreen() {
               style={styles.returnButton}
               onPress={returnToHomePage}
             >
-              <Text style={styles.returnButtonText}>Hemen Sipariş Ver</Text>
+              <Text style={styles.returnButtonText}>Ana Sayfaya Dön</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <FlatList
             data={pastOrders}
             renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item, index) => item.name + index}
             showsVerticalScrollIndicator={false}
           />
         )}
@@ -150,6 +159,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   container: {
+    flex: 1,
     marginTop: 20,
   },
   image: {
@@ -192,9 +202,10 @@ const styles = StyleSheet.create({
     padding: 1.2,
   },
   emptyText: {
-    textAlign: "center",
-    fontSize: 16,
     marginTop: 20,
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "gray",
   },
   content: {
     flex: 1,
@@ -204,7 +215,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   itemName: {
-    fontWeight: "bold",    
+    fontWeight: "bold",
   },
   itemContent: {
     flexDirection: "row",
@@ -243,7 +254,7 @@ const styles = StyleSheet.create({
   returnButtonText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
   },
   price: {
     fontWeight: "bold",

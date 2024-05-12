@@ -30,6 +30,7 @@ export default function RegisterScreen() {
   const [coupon, setCoupon] = useState("");
   const [district, setDistrict] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const [favourites, setFavourites] = useState("");
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({});
 
@@ -72,6 +73,7 @@ export default function RegisterScreen() {
           pastOrder: [],
           cart: [],
           coupon: [],
+          favourites: [],
         });
         console.log("Kullanıcı kayıt oldu", user.email);
         navigation.navigate("home", { user_mail: email });

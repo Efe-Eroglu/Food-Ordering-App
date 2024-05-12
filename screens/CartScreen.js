@@ -28,7 +28,6 @@ export default function CartScreen() {
   const [userCoupons, setUserCoupons] = useState([]);
   const [selectedCouponIndex, setSelectedCouponIndex] = useState(null);
   const [couponSectionOpen, setCouponSectionOpen] = useState(false);
-  const [keysMap, setKeysMap] = useState({});
 
   useEffect(() => {
     StatusBar.setBackgroundColor("#ad3103");
@@ -86,7 +85,7 @@ export default function CartScreen() {
   };
 
   const renderItem = ({ item, index }) => {
-    const key = generateUniqueId(index);
+    const key = item.id;
 
     return (
       <View key={key} style={styles.itemContainer}>
@@ -122,6 +121,7 @@ export default function CartScreen() {
       </View>
     );
   };
+
 
   const handleCheckout = async () => {
     setLoading(true);
@@ -197,18 +197,6 @@ export default function CartScreen() {
     fetchUserCoupon();
   }, [user_mail]);
 
-  const generateUniqueId = (index) => {
-    const key = `${index}_${Date.now()}`;
-    if (keysMap[key]) {
-      return generateUniqueId(index + 1);
-    }
-    setKeysMap({ ...keysMap, [key]: true });
-    return key;
-  };
-
-  useEffect(() => {
-    setKeysMap({});
-  }, [cartItems]);
 
   return (
     <View style={styles.container}>
@@ -242,7 +230,7 @@ export default function CartScreen() {
               <FlatList
                 data={cartItems}
                 renderItem={renderItem}
-                keyExtractor={(item, index) => `${item.name}_${index}`} // Unique key generation
+                keyExtractor={(item, index) => item.id} 
                 showsVerticalScrollIndicator={false}
               />
             </View>
@@ -341,21 +329,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emptyCartText: {
-    fontSize: 16,
-    textAlign: "center",
-    marginBottom: 20,
-    fontFamily: "Roboto",
+    marginTop: 20,
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "gray",
   },
   returnButton: {
     backgroundColor: "#d9440d",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    marginTop:15
   },
   returnButtonText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
   },
   itemContainer: {
     flexDirection: "row",

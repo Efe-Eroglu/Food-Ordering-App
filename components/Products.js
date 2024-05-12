@@ -59,7 +59,7 @@ const Products = ({ user_mail, restauran_name }) => {
     setNotification(`${item.name} başarıyla sepete eklendi.`);
     setTimeout(() => {
       setNotification(null);
-    }, 3000); // 3 saniye sonra bildirimi kaldır
+    }, 3000); 
   };
 
   const Notification = () => {

@@ -22,7 +22,6 @@ export default function AccountDetailsScreen() {
   const [postaKodu, setPostaKodu] = useState("");
   const [telefon, setTelefon] = useState("");
 
-
   const route = useRoute();
   const { user_mail } = route.params;
 
@@ -133,8 +132,8 @@ export default function AccountDetailsScreen() {
           mask: "0 (999) 999-9999",
         }}
         value={telefon}
-        onChangeText={(formatted, extracted) => {
-          setTelefon(extracted);
+        onChangeText={(text) => {
+        setTelefon(text)
         }}
       />
 

@@ -7,13 +7,16 @@ import {
   TouchableOpacity,
   StatusBar,
 } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import PastOrderBar from "../components/PastOrderBar";
 import { Fontisto } from "@expo/vector-icons";
 
 export default function Coupons() {
+
+  const navigation = useNavigation();
+
   const route = useRoute();
   const { user_mail } = route.params;
   const [userCoupons, setUserCoupons] = useState([]);
@@ -50,6 +53,10 @@ export default function Coupons() {
     </TouchableOpacity>
   );
 
+  const returnToHomePage = () => {
+    navigation.navigate("home", { user_mail: user_mail });
+  };
+
   return (
     <View style={styles.container}>
       <PastOrderBar title={"Kuponlar"} user_mail={user_mail} />
@@ -67,8 +74,12 @@ export default function Coupons() {
       ) : (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>Henüz kuponunuz bulunmamaktadır.</Text>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>
+          <TouchableOpacity
+            style={styles.returnButton}
+            activeOpacity={0.8}
+            onPress={returnToHomePage}
+          >
+            <Text style={styles.returnButtonText}>
               Kupon Kazanmak İçin Sipariş Ver
             </Text>
           </TouchableOpacity>
@@ -110,15 +121,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
   },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   emptyText: {
-    fontSize: 16,
-    marginBottom: 20,
-    textAlign: "center",
+    marginTop: 20,
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "gray",
   },
   button: {
     backgroundColor: "#007bff",
@@ -131,6 +138,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     maxWidth: 150,
+    textAlign: "center",
+  },
+  emptyContainer: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  returnButton: {
+    backgroundColor: "#d9440d",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 15,
+    maxWidth: 200,
+    marginBottom: 50,
+  },
+  returnButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
     textAlign: "center",
   },
 });
