@@ -24,15 +24,10 @@ import PastOrderBar from "../components/PastOrderBar";
 
 export default function CartScreen() {
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [userCoupons, setUserCoupons] = useState([]);
   const [selectedCouponIndex, setSelectedCouponIndex] = useState(null);
   const [couponSectionOpen, setCouponSectionOpen] = useState(false);
-
-  useEffect(() => {
-    StatusBar.setBackgroundColor("#ad3103");
-    StatusBar.setBarStyle("light-content");
-  }, []);
 
   const cartItems = useSelector((state) => state.cart.cart);
   const dispatch = useDispatch();
@@ -122,7 +117,6 @@ export default function CartScreen() {
     );
   };
 
-
   const handleCheckout = async () => {
     setLoading(true);
   
@@ -150,7 +144,6 @@ export default function CartScreen() {
   
       let pastOrders = userData.pastOrder || [];
   
-      // Tüm sepetteki ürünleri geçmiş siparişlere ekle
       cartItems.forEach((item) => {
         pastOrders.push({
           ...item,
@@ -171,7 +164,7 @@ export default function CartScreen() {
     setLoading(false);
     navigation.navigate("odeme", {
       user_mail: user_mail,
-      paymentSuccess: true, // Ödeme başarılı olduğunu belirtmek için
+      paymentSuccess: true, 
     });
   };
   
@@ -193,7 +186,7 @@ export default function CartScreen() {
         console.log("Hata: ", error);
       }
     }
-    fetchUserCoupon();
+    fetchUserCoupon().then(() => setLoading(false)); // Veritabanı işlemi tamamlandığında loading false olacak
   }, [user_mail]);
 
 
@@ -204,9 +197,7 @@ export default function CartScreen() {
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#d9440d" />
-          <Text style={styles.loadingText}>
-            Ödeme Ekranına Yönlendiriliyorsunuz...
-          </Text>
+          <Text style={styles.loadingText}>Yükleniyor...</Text>
         </View>
       ) : (
         <>

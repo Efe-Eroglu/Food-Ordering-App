@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator
 } from "react-native";
 import { Entypo, FontAwesome } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
@@ -25,6 +26,7 @@ export default function GelAl() {
   const [notification, setNotification] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [favoriRestoranlar, setFavoriRestoranlar] = useState([]);
+  const [loading, setLoading] = useState(true); // State for loading indicator
   const userRef = doc(db, "Kullanicilar", user_mail);
 
   useEffect(() => {
@@ -66,6 +68,7 @@ export default function GelAl() {
           }
         });
         setIncome(data);
+        setLoading(false); // Set loading to false after fetching data
       } catch (error) {
         console.error("Veri getirme hatası: ", error);
       }
@@ -182,16 +185,20 @@ export default function GelAl() {
             <Text style={{ marginRight: 5 }}>
               <Entypo name="star" size={18} color="#edd142" /> {item.rating}
             </Text>
-            <Text style={styles.delivery}>
-              <FontAwesome name="motorcycle" size={16} color="gray" />{" "}
-              {item.delivery}
-              <Text style={{ fontSize: 10 }}>dk</Text>
-            </Text>
           </View>
         </View>
       </TouchableOpacity>
     </View>
   );
+
+  if (loading) { // Show loading indicator
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ad3103" />
+        <Text style={styles.loadingText}>Gel Al Restoranları Yükleniyor...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -258,10 +265,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginVertical: 20,
   },
-  delivery: {
-    fontSize: 14,
-    marginLeft: 20,
-  },
+ 
   name: {
     fontWeight: "bold",
   },
@@ -288,5 +292,15 @@ const styles = StyleSheet.create({
   addFav: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
   },
 });

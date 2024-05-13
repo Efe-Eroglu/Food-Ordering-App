@@ -15,6 +15,7 @@ import { db } from "../firebase";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Animatable } from "react-native-animatable";
 
 export default function PastOrdersScreen() {
   const navigation = useNavigation();
@@ -126,7 +127,10 @@ export default function PastOrdersScreen() {
 
       <View style={styles.container}>
         {loading ? (
-          <ActivityIndicator size="large" color="#d9440d" />
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#ad3103" />
+            <Text style={styles.loadingText}>Geçmiş Siparişleriniz Yükleniyor...</Text>
+          </View>
         ) : error || pastOrders.length === 0 ? (
           <View style={styles.emptyCartContainer}>
             <Text style={styles.emptyText}>Geçmiş sipariş bulunamadı.</Text>
@@ -266,5 +270,15 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginLeft: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
   },
 });

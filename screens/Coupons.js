@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { db } from "../firebase";
@@ -20,14 +21,16 @@ export default function Coupons() {
   const route = useRoute();
   const { user_mail } = route.params;
   const [userCoupons, setUserCoupons] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     StatusBar.setBackgroundColor("#ad3103");
     StatusBar.setBarStyle("light-content");
   }, []);
-
   useEffect(() => {
-    async function fetchUserCoupon() {
+    const fetchUserCoupon = async () => {
+      setLoading(true);
       try {
         const docRef = doc(db, "Kullanicilar", user_mail);
         const docSnap = await getDoc(docRef);
@@ -38,10 +41,19 @@ export default function Coupons() {
         }
       } catch (error) {
         console.log("Hata: ", error);
+        setError(true);
       }
-    }
+      setTimeout(() => {
+        setLoading(false);
+      }, 500); // 1 saniye sonra yükleme durumu kaldırılıyor
+    };
     fetchUserCoupon();
   }, [user_mail]);
+  
+
+  const returnToHomePage = () => {
+    navigation.navigate("home", { user_mail: user_mail });
+  };
 
   const renderCouponItem = ({ item }) => (
     <TouchableOpacity style={styles.couponContainer} activeOpacity={0.9}>
@@ -53,14 +65,26 @@ export default function Coupons() {
     </TouchableOpacity>
   );
 
-  const returnToHomePage = () => {
-    navigation.navigate("home", { user_mail: user_mail });
-  };
-
   return (
     <View style={styles.container}>
       <PastOrderBar title={"Kuponlar"} user_mail={user_mail} />
-      {userCoupons.length > 0 ? (
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#ad3103" />
+          <Text style={styles.loadingText}>Kuponlar Yükleniyor...</Text>
+        </View>
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Kuponlar yüklenirken bir hata oluştu.</Text>
+          <TouchableOpacity
+            style={styles.returnButton}
+            activeOpacity={0.8}
+            onPress={returnToHomePage}
+          >
+            <Text style={styles.returnButtonText}>Ana Sayfaya Dön</Text>
+          </TouchableOpacity>
+        </View>
+      ) : userCoupons.length > 0 ? (
         <View style={styles.container}>
           <Text style={styles.header}>Size Özel Kuponlar</Text>
 
@@ -141,10 +165,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   emptyContainer: {
-    width: "100%",
-    height: "100%",
-    alignItems: "center",
+    flex: 1,
     justifyContent: "center",
+    alignItems: "center",
   },
   returnButton: {
     backgroundColor: "#d9440d",
@@ -160,5 +183,28 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
     textAlign: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "red",
+    textAlign: "center",
+    marginBottom: 20,
   },
 });

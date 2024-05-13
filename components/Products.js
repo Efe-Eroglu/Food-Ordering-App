@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../screens/cartAction';
@@ -12,6 +12,7 @@ const Products = ({ user_mail, restauran_name }) => {
   const [notification, setNotification] = useState(null);
   const dispatch = useDispatch();
   const cart = useSelector(state => state.cart.cart);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -21,6 +22,7 @@ const Products = ({ user_mail, restauran_name }) => {
         fetchedProducts.push({ id: doc.id, ...doc.data(), quantity: 0 });
       });
       setProducts(fetchedProducts);
+      setLoading(false); // İşlemler bittikten sonra loading durumunu false yap
     };
     fetchProducts();
   }, []);
@@ -68,6 +70,15 @@ const Products = ({ user_mail, restauran_name }) => {
       </Animatable.View>
     );
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ad3103" />
+        <Text style={styles.loadingText}>Ürünler Yükleniyor...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -155,6 +166,16 @@ const styles = StyleSheet.create({
   notificationText: {
     color: "#fff",
     textAlign: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginTop: 10,
   },
 });
 

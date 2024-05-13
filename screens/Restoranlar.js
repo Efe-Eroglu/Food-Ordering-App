@@ -1,7 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { Entypo, FontAwesome } from "@expo/vector-icons";
-import { collection, getDocs, updateDoc, arrayUnion, arrayRemove, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  doc,
+  getDoc,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
@@ -18,6 +36,9 @@ export default function Restoranlar() {
 
   const [favorites, setFavorites] = useState([]);
   const [notification, setNotification] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [restaurants, setRestaurants] = useState([]);
+  const [fastDeliveryRestaurants, setFastDeliveryRestaurants] = useState([]);
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -93,16 +114,16 @@ export default function Restoranlar() {
   useEffect(() => {
     StatusBar.setBackgroundColor("#ad3103");
     StatusBar.setBarStyle("light-content");
-  }, []);
 
-  const [restaurants, setRestaurants] = useState([]);
-
-  useEffect(() => {
     const fetchRestaurants = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "Restoranlar"));
-        const data = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        const data = querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
         setRestaurants(data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
@@ -120,7 +141,7 @@ export default function Restoranlar() {
         setNotification(`${restaurantName} favorilere eklendi.`);
         setTimeout(() => {
           setNotification(null);
-        }, 3000); 
+        }, 3000);
         console.log(`${restaurantName} favorilere eklendi.`);
       } else {
         const userData = userSnapshot.data();
@@ -137,7 +158,7 @@ export default function Restoranlar() {
           setNotification(`${restaurantName} favorilerden çıkarıldı.`);
           setTimeout(() => {
             setNotification(null);
-          }, 3000); 
+          }, 3000);
           console.log(`${restaurantName} favorilerden çıkarıldı.`);
         } else {
           await updateDoc(userRef, {
@@ -147,12 +168,23 @@ export default function Restoranlar() {
           setNotification(`${restaurantName} favorilere eklendi.`);
           setTimeout(() => {
             setNotification(null);
-          }, 3000); 
+          }, 3000);
           console.log(`${restaurantName} favorilere eklendi.`);
         }
       }
     } catch (error) {
       console.error("Favorilere ekleme hatası:", error);
+    }
+  };
+
+  const filterRestaurants = (fastDelivery) => {
+    if (fastDelivery) {
+      const fastDeliveryRestaurants = restaurants.filter(
+        (restaurant) => restaurant.delivery <= 30
+      );
+      setFastDeliveryRestaurants(fastDeliveryRestaurants);
+    } else {
+      setFastDeliveryRestaurants([]);
     }
   };
 
@@ -166,13 +198,22 @@ export default function Restoranlar() {
     );
   };
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ad3103" />
+        <Text style={styles.loadingText}>Restoranlar Yükleniyor...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.screen}>
       <Bar email={user_mail} />
       <View style={styles.container}>
-        <FilterBar user_mail={user_mail} />
+        <FilterBar user_mail={user_mail} onFilter={filterRestaurants} />
         <FlatList
-          data={restaurants}
+          data={fastDeliveryRestaurants.length ? fastDeliveryRestaurants : restaurants}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
@@ -251,5 +292,15 @@ const styles = StyleSheet.create({
   notificationText: {
     color: "#fff",
     textAlign: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
   },
 });

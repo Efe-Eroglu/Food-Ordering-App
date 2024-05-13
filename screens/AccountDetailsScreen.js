@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,7 @@ import {
   View,
   Alert,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { useFonts } from "expo-font";
 import PastOrderBar from "../components/PastOrderBar";
@@ -21,6 +22,7 @@ export default function AccountDetailsScreen() {
   const [mahalle, setMahalle] = useState("");
   const [postaKodu, setPostaKodu] = useState("");
   const [telefon, setTelefon] = useState("");
+  const [loading, setLoading] = useState(true); // Yeni eklendi
 
   const route = useRoute();
   const { user_mail } = route.params;
@@ -33,30 +35,31 @@ export default function AccountDetailsScreen() {
   useEffect(() => {
     StatusBar.setBackgroundColor("#ad3103");
     StatusBar.setBarStyle("light-content");
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    async function fetchUserData() {
-      try {
-        const docRef = doc(db, "Kullanicilar", user_mail);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setSehir(data.city || "");
-          setIlce(data.district || "");
-          setMahalle(data.adress || "");
-          setPostaKodu(data.postalCode || "");
-          setTelefon(data.phone || "");
-        }
-      } catch (error) {
-        console.error("Hata:", error);
+  const fetchData = async () => {
+    try {
+      const docRef = doc(db, "Kullanicilar", user_mail);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setSehir(data.city || "");
+        setIlce(data.district || "");
+        setMahalle(data.adress || "");
+        setPostaKodu(data.postalCode || "");
+        setTelefon(data.phone || "");
+        setLoading(false); // Veri çekildikten sonra loading'i false yap
       }
+    } catch (error) {
+      console.error("Hata:", error);
+      setLoading(false); // Hata olduğunda da loading'i false yap
     }
-    fetchUserData();
-  }, [user_mail]);
+  };
 
   const update = async () => {
     try {
+      setLoading(true); // Güncelleme işlemi başladığında loading'i true yap
       await updateDoc(doc(db, "Kullanicilar", user_mail), {
         adress: mahalle,
         city: sehir,
@@ -64,16 +67,23 @@ export default function AccountDetailsScreen() {
         postalCode: postaKodu,
         phone: telefon,
       });
+      setLoading(false); // Güncelleme işlemi bittiğinde loading'i false yap
       Alert.alert("Başarılı", "Bilgiler başarıyla güncellendi.");
       console.log("Kullanıcı bilgi güncelledi", user_mail);
     } catch (error) {
       console.error("Hata:", error);
+      setLoading(false); // Hata olduğunda da loading'i false yap
       Alert.alert("Hata", "Bilgiler güncellenirken bir hata oluştu.");
     }
   };
 
-  if (!fontsLoaded && !fontError) {
-    return null;
+  if (loading || !fontsLoaded || fontError) { // loading veya font yüklenme durumunda yükleme animasyonunu göster
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ad3103" />
+        <Text style={styles.loadingText}>Bilgileriniz Güncelleniyor...</Text>
+      </View>
+    );
   }
 
   return (
@@ -133,7 +143,7 @@ export default function AccountDetailsScreen() {
         }}
         value={telefon}
         onChangeText={(text) => {
-        setTelefon(text)
+          setTelefon(text);
         }}
       />
 
@@ -178,5 +188,15 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     textAlign: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
   },
 });

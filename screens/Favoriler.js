@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
@@ -6,25 +7,14 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator
 } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
-import Bar from "../components/Bar";
-import { Entypo } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
-import FilterBar from "../components/FilterBar";
-import { useFonts } from "expo-font";
-import { db } from "../firebase";
-import {
-  collection,
-  getDocs,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-  doc,
-  getDoc,
-  setDoc,
-} from "firebase/firestore";
+import { Entypo, FontAwesome } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, setDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import Bar from "../components/Bar";
+import FilterBar from "../components/FilterBar";
 import * as Animatable from "react-native-animatable";
 
 export default function Favoriler() {
@@ -34,17 +24,16 @@ export default function Favoriler() {
 
   const [notification, setNotification] = useState(null);
   const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true); 
+  const [fastDeliveryFilter, setFastDeliveryFilter] = useState(false);
+  const [favoriRestoranlar, setFavoriRestoranlar] = useState([]);
 
   const userRef = doc(db, "Kullanicilar", user_mail);
 
   useEffect(() => {
     StatusBar.setBackgroundColor("#ad3103");
     StatusBar.setBarStyle("light-content");
-  }, []);
 
-  const [favoriRestoranlar, setFavoriRestoranlar] = useState([]);
-
-  useEffect(() => {
     const fetchFavorites = async () => {
       try {
         const userRef = doc(db, "Kullanicilar", user_mail);
@@ -62,6 +51,7 @@ export default function Favoriler() {
           );
 
           setFavoriRestoranlar(favoriRestoranVerileri);
+          setLoading(false); 
         }
       } catch (error) {
         console.error("Favorileri getirme hatası:", error);
@@ -127,6 +117,11 @@ export default function Favoriler() {
     }
   }, [favoriRestoranlar]);
 
+
+  const toggleFastDeliveryFilter = () => {
+    setFastDeliveryFilter(!fastDeliveryFilter);
+  };
+
   const Notification = () => {
     return (
       <Animatable.View
@@ -191,31 +186,24 @@ export default function Favoriler() {
     </View>
   );
 
-  const [fontsLoaded, fontError] = useFonts({
-    SemiBold: require("../assets/fonts/Caveat-SemiBold.ttf"),
-    Medium: require("../assets/fonts/Caveat-Medium.ttf"),
-  });
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded || fontError) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, fontError]);
-
-  if (!fontsLoaded && !fontError) {
-    return null;
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ad3103" />
+        <Text style={styles.loadingText}>Favoriler Yükleniyor...</Text>
+      </View>
+    );
   }
   
   const returnToHomePage = () => {
     navigation.navigate("home", { user_mail: user_mail });
   };
 
-
   return (
     <View style={styles.outContainer}>
       <Bar email={user_mail} />
       <View style={styles.container}>
-        <FilterBar user_mail={user_mail} />
+        <FilterBar user_mail={user_mail} onFilter={toggleFastDeliveryFilter}/>
         {favoriRestoranlar.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={styles.noFavoritesText}>Favori restoranınız yok</Text>
@@ -229,7 +217,7 @@ export default function Favoriler() {
           </View>
         ) : (
           <FlatList
-            data={favoriRestoranlar}
+            data={fastDeliveryFilter ? favoriRestoranlar.filter(restaurant => restaurant.delivery <= 30) : favoriRestoranlar}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
@@ -325,5 +313,15 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 14,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
   },
 });
