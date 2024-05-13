@@ -41,7 +41,6 @@ export default function PastOrdersScreen() {
         if (doc.exists()) {
           const data = doc.data();
           if (data.pastOrder) {
-            // ters çevirme işlemi burada gerçekleştiriliyor
             setPastOrders(data.pastOrder.reverse());
           }
         }

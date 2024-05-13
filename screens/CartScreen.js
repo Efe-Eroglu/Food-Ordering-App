@@ -125,57 +125,56 @@ export default function CartScreen() {
 
   const handleCheckout = async () => {
     setLoading(true);
-    setTimeout(async () => {
-      setLoading(false);
-      if (selectedCouponIndex !== null) {
-        const updatedCoupons = [...userCoupons];
-        updatedCoupons.splice(selectedCouponIndex, 1);
-        setUserCoupons(updatedCoupons);
-
-        try {
-          const docRef = doc(db, "Kullanicilar", user_mail);
-          await updateDoc(docRef, {
-            coupon: updatedCoupons,
-          });
-          console.log("Kupon silindi.");
-        } catch (error) {
-          console.log("Hata: Kupon silinemedi", error);
-        }
-      }
-
+  
+    if (selectedCouponIndex !== null) {
+      const updatedCoupons = [...userCoupons];
+      updatedCoupons.splice(selectedCouponIndex, 1);
+      setUserCoupons(updatedCoupons);
+  
       try {
-        const now = new Date();
         const docRef = doc(db, "Kullanicilar", user_mail);
-        const docSnap = await getDoc(docRef);
-        const userData = docSnap.data();
-
-        let pastOrders = userData.pastOrder || [];
-
-        // Tüm sepetteki ürünleri geçmiş siparişlere ekle
-        cartItems.forEach((item) => {
-          pastOrders.push({
-            ...item,
-            orderDate: now,
-            quantity: item.quantity,
-          });
-        });
-
         await updateDoc(docRef, {
-          pastOrder: pastOrders,
+          coupon: updatedCoupons,
         });
-
-        console.log("Sepet içeriği pastOrder'a eklendi.");
+        console.log("Kupon silindi.");
       } catch (error) {
-        console.log("Hata: Sepet içeriği pastOrder'a eklenemedi", error);
+        console.log("Hata: Kupon silinemedi", error);
       }
-
-      navigation.navigate("odeme", {
-        user_mail: user_mail,
-        paymentSuccess: true, // Ödeme başarılı olduğunu belirtmek için
+    }
+  
+    try {
+      const now = new Date();
+      const docRef = doc(db, "Kullanicilar", user_mail);
+      const docSnap = await getDoc(docRef);
+      const userData = docSnap.data();
+  
+      let pastOrders = userData.pastOrder || [];
+  
+      // Tüm sepetteki ürünleri geçmiş siparişlere ekle
+      cartItems.forEach((item) => {
+        pastOrders.push({
+          ...item,
+          orderDate: now,
+          quantity: item.quantity,
+        });
       });
-    }, 1000);
+  
+      await updateDoc(docRef, {
+        pastOrder: pastOrders,
+      });
+  
+      console.log("Sepet içeriği pastOrder'a eklendi.");
+    } catch (error) {
+      console.log("Hata: Sepet içeriği pastOrder'a eklenemedi", error);
+    }
+  
+    setLoading(false);
+    navigation.navigate("odeme", {
+      user_mail: user_mail,
+      paymentSuccess: true, // Ödeme başarılı olduğunu belirtmek için
+    });
   };
-
+  
   const returnToHomePage = () => {
     navigation.navigate("home", { user_mail: user_mail });
   };
@@ -247,7 +246,7 @@ export default function CartScreen() {
                   {couponSectionOpen ? "▼" : "▲"}
                 </Text>
               </TouchableOpacity>
-              {couponSectionOpen && (
+              {couponSectionOpen && userCoupons.length > 0 && (
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
@@ -276,6 +275,9 @@ export default function CartScreen() {
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
+              )}
+              {!couponSectionOpen && userCoupons.length === 0 && (
+                <Text style={styles.emptyCouponText}>Aktif Kuponunuz Bulunamadı</Text>
               )}
             </View>
           )}
@@ -483,5 +485,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#fff",
     textAlign: "center",
+  },
+  emptyCouponText: {
+    textAlign: "center",
+    color: "rgba(0,0,0,0.5)",
+    fontWeight:"bold",
+    marginVertical:10,
   },
 });

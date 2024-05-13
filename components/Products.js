@@ -22,7 +22,6 @@ const Products = ({ user_mail, restauran_name }) => {
       });
       setProducts(fetchedProducts);
     };
-
     fetchProducts();
   }, []);
 
