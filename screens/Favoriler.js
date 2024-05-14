@@ -7,11 +7,18 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { Entypo, FontAwesome } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import Bar from "../components/Bar";
 import FilterBar from "../components/FilterBar";
@@ -24,9 +31,14 @@ export default function Favoriler() {
 
   const [notification, setNotification] = useState(null);
   const [favorites, setFavorites] = useState([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const [fastDeliveryFilter, setFastDeliveryFilter] = useState(false);
   const [favoriRestoranlar, setFavoriRestoranlar] = useState([]);
+  const [fastDeliveryRestaurants, setFastDeliveryRestaurants] = useState([]);
+  const [sortByRating, setSortByRating] = useState(false);
+  const [sortByRatingDesc, setSortByRatingDesc] = useState(false);
+  const [restaurants, setRestaurants] = useState([]);
+
 
   const userRef = doc(db, "Kullanicilar", user_mail);
 
@@ -51,7 +63,7 @@ export default function Favoriler() {
           );
 
           setFavoriRestoranlar(favoriRestoranVerileri);
-          setLoading(false); 
+          setLoading(false);
         }
       } catch (error) {
         console.error("Favorileri getirme hatası:", error);
@@ -116,11 +128,6 @@ export default function Favoriler() {
       setFavorites(favoriRestoranlar.map((restoran) => restoran.name));
     }
   }, [favoriRestoranlar]);
-
-
-  const toggleFastDeliveryFilter = () => {
-    setFastDeliveryFilter(!fastDeliveryFilter);
-  };
 
   const Notification = () => {
     return (
@@ -194,16 +201,85 @@ export default function Favoriler() {
       </View>
     );
   }
-  
+
   const returnToHomePage = () => {
     navigation.navigate("home", { user_mail: user_mail });
+  };
+
+  const filterRestaurants = (fastDelivery) => {
+    if (fastDelivery) {
+      const fastDeliveryRestaurants = favoriRestoranlar.filter(
+        (restaurant) => restaurant.delivery <= 30
+      );
+      setFastDeliveryRestaurants(fastDeliveryRestaurants);
+    } else {
+      setFastDeliveryRestaurants([]);
+    }
+  };
+
+  const sortRestaurantsByName = () => {
+    const sortedRestaurants = [...favoriRestoranlar].sort((a, b) => {
+      const nameA = a.name.toUpperCase();
+      const nameB = b.name.toUpperCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    });
+    setFavoriRestoranlar(sortedRestaurants);
+  };
+
+  const sortRestaurantsByNameDesc = () => {
+    const sortedRestaurants = [...favoriRestoranlar].sort((a, b) => {
+      const nameA = a.name.toUpperCase();
+      const nameB = b.name.toUpperCase();
+      if (nameA > nameB) return -1; 
+      if (nameA < nameB) return 1; 
+      return 0;
+    });
+    setFavoriRestoranlar(sortedRestaurants);
+  };
+
+  const sortRestaurantsByRating = () => {
+    setSortByRating(!sortByRating);
+    setSortByRatingDesc(false);
+  };
+
+  const sortRestaurantsByRatingDesc = () => {
+    setSortByRatingDesc(!sortByRatingDesc);
+    setSortByRating(false);
+  };
+
+  const sortRestaurantsByDeliveryTimeAscending = () => {
+    const sortedRestaurants = [...favoriRestoranlar].sort(
+      (a, b) => a.delivery - b.delivery
+    );
+    setFavoriRestoranlar(sortedRestaurants);
+  };
+
+  const sortRestaurantsByDeliveryTimeDescending = () => {
+    const sortedRestaurants = [...favoriRestoranlar].sort(
+      (a, b) => b.delivery - a.delivery
+    );
+    setFavoriRestoranlar(sortedRestaurants);
   };
 
   return (
     <View style={styles.outContainer}>
       <Bar email={user_mail} />
       <View style={styles.container}>
-        <FilterBar user_mail={user_mail} onFilter={toggleFastDeliveryFilter}/>
+        <FilterBar
+          user_mail={user_mail}
+          onFilter={filterRestaurants}
+          onSortByName={sortRestaurantsByName}
+          onSortByNameDesc={sortRestaurantsByNameDesc}
+          onSortByDeliveryTimeAscending={sortRestaurantsByDeliveryTimeAscending}
+          onSortByDeliveryTimeDescending={
+            sortRestaurantsByDeliveryTimeDescending
+          }
+          onSortByRatingAscending={sortRestaurantsByRating}
+          onSortByRatingDescending={sortRestaurantsByRatingDesc}
+        />
+
         {favoriRestoranlar.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={styles.noFavoritesText}>Favori restoranınız yok</Text>
@@ -217,7 +293,13 @@ export default function Favoriler() {
           </View>
         ) : (
           <FlatList
-            data={fastDeliveryFilter ? favoriRestoranlar.filter(restaurant => restaurant.delivery <= 30) : favoriRestoranlar}
+            data={
+              fastDeliveryFilter
+                ? favoriRestoranlar.filter(
+                    (restaurant) => restaurant.delivery <= 30
+                  )
+                : favoriRestoranlar
+            }
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
@@ -307,7 +389,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
-    marginTop:15
+    marginTop: 15,
   },
   returnButtonText: {
     color: "#fff",

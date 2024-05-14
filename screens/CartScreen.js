@@ -230,6 +230,7 @@ export default function CartScreen() {
             <View style={[styles.couponContainer, { paddingHorizontal: 10 }]}>
               <TouchableOpacity
                 style={styles.couponHeader}
+                activeOpacity={0.8}
                 onPress={() => setCouponSectionOpen(!couponSectionOpen)}
               >
                 <Text style={styles.couponTitle}>Kuponlarınız</Text>
@@ -246,6 +247,7 @@ export default function CartScreen() {
                   {userCoupons.map((coupon, index) => (
                     <TouchableOpacity
                       key={index}
+                      activeOpacity={0.8}
                       style={[
                         styles.couponItem,
                         selectedCouponIndex === index && {

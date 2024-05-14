@@ -7,6 +7,7 @@ import {
   View,
   StatusBar,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useFonts } from "expo-font";
 import { useNavigation } from "@react-navigation/native";
@@ -22,6 +23,7 @@ export default function UserLoginScreen() {
 
   const [user_email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [fontsLoaded] = useFonts({
     Medium: require("../assets/fonts/Caveat-Medium.ttf"),
@@ -31,6 +33,7 @@ export default function UserLoginScreen() {
 
   const handleLogin = async () => {
     try {
+      setIsLoading(true);
       const userCredentials = await auth.signInWithEmailAndPassword(
         user_email,
         password
@@ -41,11 +44,18 @@ export default function UserLoginScreen() {
     } catch (error) {
       console.error("Giriş hatası: ", error);
       Alert.alert("Hata", "Giriş yapılırken bir hata oluştu.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  if (!fontsLoaded) {
-    return null;
+  if (!fontsLoaded || isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ad3103" />
+        <Text style={styles.loadingText}>Giriş Yapılıyor...</Text>
+      </View>
+    );
   }
 
   return (
@@ -100,12 +110,22 @@ export default function UserLoginScreen() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 20,
+    fontSize: 16,
+    color: "#ad3103",
+  },
   title: {
     fontSize: 53,
     marginBottom: 50,
     fontFamily: "SemiBold",
-    width:"100%",
-    textAlign:"center"
+    width: "100%",
+    textAlign: "center",
   },
   container: {
     backgroundColor: "white",
@@ -144,5 +164,15 @@ const styles = StyleSheet.create({
   subtitleText: {
     fontSize: 12,
     fontFamily: "Roboto",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
   },
 });

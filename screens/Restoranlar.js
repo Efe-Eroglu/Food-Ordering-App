@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  FlatList,
-  Image,
-  StatusBar,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  FlatList,
+  Image,
   ActivityIndicator,
+  StatusBar,
 } from "react-native";
-import { Entypo, FontAwesome } from "@expo/vector-icons";
+import { Ionicons, Octicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   collection,
   getDocs,
@@ -21,8 +22,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import { useNavigation } from "@react-navigation/native";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Bar from "../components/Bar";
 import FilterBar from "../components/FilterBar";
 import * as Animatable from "react-native-animatable";
@@ -39,6 +39,8 @@ export default function Restoranlar() {
   const [loading, setLoading] = useState(true);
   const [restaurants, setRestaurants] = useState([]);
   const [fastDeliveryRestaurants, setFastDeliveryRestaurants] = useState([]);
+  const [sortByRating, setSortByRating] = useState(false);
+  const [sortByRatingDesc, setSortByRatingDesc] = useState(false);
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -59,6 +61,42 @@ export default function Restoranlar() {
 
   const isFavorite = (restaurantName) => {
     return favorites.includes(restaurantName);
+  };
+
+  const sortRestaurantsByName = () => {
+    const sortedRestaurants = [...restaurants].sort((a, b) => {
+      const nameA = a.name.toUpperCase();
+      const nameB = b.name.toUpperCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    });
+    setRestaurants(sortedRestaurants);
+  };
+
+  const sortRestaurantsByNameDesc = () => {
+    const sortedRestaurants = [...restaurants].sort((a, b) => {
+      const nameA = a.name.toUpperCase();
+      const nameB = b.name.toUpperCase();
+      if (nameA > nameB) return -1; // Tersten sıralama
+      if (nameA < nameB) return 1; // Tersten sıralama
+      return 0;
+    });
+    setRestaurants(sortedRestaurants);
+  };
+
+  const sortRestaurantsByDeliveryTimeAscending = () => {
+    const sortedRestaurants = [...restaurants].sort(
+      (a, b) => a.delivery - b.delivery
+    );
+    setRestaurants(sortedRestaurants);
+  };
+
+  const sortRestaurantsByDeliveryTimeDescending = () => {
+    const sortedRestaurants = [...restaurants].sort(
+      (a, b) => b.delivery - a.delivery
+    );
+    setRestaurants(sortedRestaurants);
   };
 
   const renderItem = ({ item }) => (
@@ -87,9 +125,9 @@ export default function Restoranlar() {
               onPress={() => addToFavorites(item.name)}
               style={styles.favoriteButton}
             >
-              <Entypo
+              <Ionicons
                 style={{ marginLeft: 5, marginTop: 2 }}
-                name={isFavorite(item.name) ? "heart" : "heart-outlined"}
+                name={isFavorite(item.name) ? "heart" : "heart-outline"}
                 size={20}
                 color="red"
               />
@@ -98,12 +136,12 @@ export default function Restoranlar() {
 
           <View style={styles.icons}>
             <Text style={{ marginRight: 5 }}>
-              <Entypo name="star" size={18} color="#edd142" /> {item.rating}
+              <Ionicons name="star" size={18} color="#edd142" /> {item.rating}
             </Text>
             <Text style={styles.delivery}>
-              <FontAwesome name="motorcycle" size={16} color="gray" />{" "}
+              <MaterialCommunityIcons name="motorbike" size={16} color="gray" />{" "}
               {item.delivery}
-              <Text style={{ fontSize: 10 }}>dk</Text>
+              <Text style={{ fontSize: 10 }}> dk</Text>
             </Text>
           </View>
         </View>
@@ -122,14 +160,26 @@ export default function Restoranlar() {
           ...doc.data(),
           id: doc.id,
         }));
-        setRestaurants(data);
+        if (sortByRating) {
+          const sortedRestaurants = [...data].sort(
+            (a, b) => b.rating - a.rating
+          );
+          setRestaurants(sortedRestaurants);
+        } else if (sortByRatingDesc) {
+          const sortedRestaurants = [...data].sort(
+            (a, b) => a.rating - b.rating
+          );
+          setRestaurants(sortedRestaurants);
+        } else {
+          setRestaurants(data);
+        }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
     };
     fetchRestaurants();
-  }, []);
+  }, [sortByRating, sortByRatingDesc]);
 
   const addToFavorites = async (restaurantName) => {
     try {
@@ -188,9 +238,23 @@ export default function Restoranlar() {
     }
   };
 
+  const sortRestaurantsByRating = () => {
+    setSortByRating(!sortByRating);
+    setSortByRatingDesc(false);
+  };
+
+  const sortRestaurantsByRatingDesc = () => {
+    setSortByRatingDesc(!sortByRatingDesc);
+    setSortByRating(false);
+  };
+
   const Notification = () => {
     return (
-      <Animatable.View animation="slideInUp" duration={1000} style={styles.notificationContainer}>
+      <Animatable.View
+        animation="slideInUp"
+        duration={1000}
+        style={styles.notificationContainer}
+      >
         <View style={styles.notification}>
           <Text style={styles.notificationText}>{notification}</Text>
         </View>
@@ -211,9 +275,24 @@ export default function Restoranlar() {
     <View style={styles.screen}>
       <Bar email={user_mail} />
       <View style={styles.container}>
-        <FilterBar user_mail={user_mail} onFilter={filterRestaurants} />
+        <FilterBar
+          user_mail={user_mail}
+          onFilter={filterRestaurants}
+          onSortByName={sortRestaurantsByName}
+          onSortByNameDesc={sortRestaurantsByNameDesc}
+          onSortByDeliveryTimeAscending={sortRestaurantsByDeliveryTimeAscending}
+          onSortByDeliveryTimeDescending={
+            sortRestaurantsByDeliveryTimeDescending
+          }
+          onSortByRatingAscending={sortRestaurantsByRating}
+          onSortByRatingDescending={sortRestaurantsByRatingDesc}
+        />
         <FlatList
-          data={fastDeliveryRestaurants.length ? fastDeliveryRestaurants : restaurants}
+          data={
+            fastDeliveryRestaurants.length
+              ? fastDeliveryRestaurants
+              : restaurants
+          }
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}

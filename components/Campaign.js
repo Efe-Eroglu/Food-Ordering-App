@@ -1,16 +1,37 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 
-export default function Campaign({email}) {
+export default function Campaign({ email }) {
   const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(true); // Yükleniyor durumu eklendi
+
+  useEffect(() => {
+    const pipeline = doc(db, "Kullanicilar", email);
+    const unsubscribe = onSnapshot(pipeline, (doc) => {
+      setIsLoading(false); // Veri alındıktan sonra yükleniyor durumunu kapat
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ad3103" />
+        <Text style={styles.loadingText}>Yükleniyor...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.box1}
         activeOpacity={1}
-        onPress={() => navigation.navigate("favoriler",{user_mail:email})}
+        onPress={() => navigation.navigate("favoriler", { user_mail: email })}
       >
         <View style={styles.textContainer}>
           <Text style={styles.campaignTitle}>Favoriler</Text>
@@ -30,7 +51,7 @@ export default function Campaign({email}) {
       <TouchableOpacity
         style={styles.box2}
         activeOpacity={1}
-        onPress={() => navigation.navigate("restoranlar",{user_mail:email})}
+        onPress={() => navigation.navigate("restoranlar", { user_mail: email })}
       >
         <View style={styles.textContainer}>
           <Text style={styles.campaignTitle}>Restoranlar</Text>
@@ -48,7 +69,7 @@ export default function Campaign({email}) {
       <TouchableOpacity
         style={styles.box2}
         activeOpacity={1}
-        onPress={() => navigation.navigate("gelAl",{user_mail:email })}
+        onPress={() => navigation.navigate("gelAl", { user_mail: email })}
       >
         <View style={styles.textContainer}>
           <Text style={styles.campaignTitle}>Gel Al</Text>
@@ -131,5 +152,15 @@ const styles = StyleSheet.create({
   },
   campaignsubTitleRightBox: {
     maxWidth: "99%",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 20,
+    fontSize: 14,
+    fontWeight:"bold"
   },
 });

@@ -7,6 +7,7 @@ import {
   Modal,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -16,23 +17,32 @@ import { auth, db } from "../firebase";
 import DetailsMenu from "./DetailsMenu";
 import { doc, onSnapshot } from "firebase/firestore";
 
-export default function Bar({email}) {
-
+export default function Bar({ email }) {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
-
   const [income, setIncome] = useState("");
+  const [isLoading, setIsLoading] = useState(true); // Yükleniyor durumu eklendi
 
-  const pipeline = doc(db,"Kullanicilar",email)
+  const pipeline = doc(db, "Kullanicilar", email);
 
- 
-  useEffect(()=>{
-    onSnapshot(pipeline, (doc) => {
-      setIncome(doc.data())
-    })
-  },[])
+  useEffect(() => {
+    const unsubscribe = onSnapshot(pipeline, (doc) => {
+      setIncome(doc.data());
+      setIsLoading(false);
+    });
 
+    return () => unsubscribe();
+  }, []);
 
+  if (isLoading || !income) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ad3103" />
+        <Text style={styles.loadingText}>Yükleniyor...</Text>
+      </View>
+    );
+  }
+  
 
   return (
     <KeyboardAvoidingView behavior="height">
@@ -41,7 +51,7 @@ export default function Bar({email}) {
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity
               activeOpacity={0.6}
-              onPress={() => setModalVisible(true)} // Modal'ı açmak için
+              onPress={() => setModalVisible(true)}
             >
               <Feather name="menu" size={26} color="white" />
             </TouchableOpacity>
@@ -49,14 +59,14 @@ export default function Bar({email}) {
             <View style={{ marginLeft: 18 }}>
               <Text style={styles.addresTitle}>{income.adress}</Text>
               <Text style={styles.addresContent}>
-                {income.city +"/" +income.district + " " + income.postalCode}
+                {income.city + "/" + income.district + " " + income.postalCode}
               </Text>
             </View>
           </View>
 
           <TouchableOpacity
             activeOpacity={0.6}
-            onPress={() => navigation.navigate("cart", {user_mail:email})}
+            onPress={() => navigation.navigate("cart", { user_mail: email })}
           >
             <MaterialCommunityIcons
               name="shopping-outline"
@@ -70,7 +80,6 @@ export default function Bar({email}) {
           <SearchBar />
         </View>
 
-        {/* Modal */}
         <Modal
           animationType="slide"
           transparent={true}
@@ -83,9 +92,7 @@ export default function Bar({email}) {
             <View style={styles.modalOverlay} />
           </TouchableWithoutFeedback>
           <View style={styles.modalContent}>
-
             <DetailsMenu email={email} />
-          
           </View>
         </Modal>
       </View>
@@ -126,5 +133,15 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     paddingHorizontal: 20,
     paddingVertical: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 20,
+    fontSize: 14,
+    fontWeight:"bold"
   },
 });
