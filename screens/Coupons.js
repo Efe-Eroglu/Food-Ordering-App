@@ -7,15 +7,16 @@ import {
   TouchableOpacity,
   StatusBar,
   ActivityIndicator,
+  TextInput,
+  Alert,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import PastOrderBar from "../components/PastOrderBar";
 import { Fontisto } from "@expo/vector-icons";
 
 export default function Coupons() {
-
   const navigation = useNavigation();
 
   const route = useRoute();
@@ -23,11 +24,13 @@ export default function Coupons() {
   const [userCoupons, setUserCoupons] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
 
   useEffect(() => {
     StatusBar.setBackgroundColor("#ad3103");
     StatusBar.setBarStyle("light-content");
   }, []);
+
   useEffect(() => {
     const fetchUserCoupon = async () => {
       setLoading(true);
@@ -42,14 +45,60 @@ export default function Coupons() {
       } catch (error) {
         console.log("Hata: ", error);
         setError(true);
-      }
-      setTimeout(() => {
+      } finally {
         setLoading(false);
-      }, 500); // 1 saniye sonra yükleme durumu kaldırılıyor
+      }
     };
     fetchUserCoupon();
   }, [user_mail]);
-  
+
+  const addCoupon = async () => {
+    if (!couponCode) {
+      Alert.alert("Uyarı", "Lütfen bir kupon kodu girin.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const couponRef = doc(db, "Kuponlar", couponCode);
+      const couponSnap = await getDoc(couponRef);
+
+      if (couponSnap.exists()) {
+        const couponData = couponSnap.data();
+        if (couponData.used && couponData.used.includes(user_mail)) {
+          Alert.alert("Uyarı", "Bu kupon kodu daha önce kullanılmış.");
+        } else {
+          const couponExpiryDate = couponData.valid.toDate();
+          if (couponExpiryDate < new Date()) {
+            Alert.alert("Uyarı", "Bu kuponun geçerlilik tarihi sona erdi.");
+          } else if (couponData.discount) {
+            const userDocRef = doc(db, "Kullanicilar", user_mail);
+            await updateDoc(userDocRef, {
+              coupon: arrayUnion(couponData.discount),
+            });
+            setUserCoupons([...userCoupons, couponData.discount]);
+            await updateDoc(couponRef, {
+              used: arrayUnion(user_mail),
+            });
+            Alert.alert(
+              "Kupon Eklendi",
+              `"${couponCode}" kupon kodlu indiriminiz başarıyla eklenmiştir. Afiyet Olsun`
+            );
+          } else {
+            Alert.alert("Uyarı", "Bu kuponun indirim değeri bulunmamaktadır.");
+          }
+        }
+      } else {
+        Alert.alert("Uyarı", "Geçersiz kupon kodu.");
+      }
+    } catch (error) {
+      console.error("Hata:", error);
+      Alert.alert("Hata", "Kupon eklenirken bir hata oluştu.");
+    } finally {
+      setLoading(false);
+      setCouponCode("");
+    }
+  };
 
   const returnToHomePage = () => {
     navigation.navigate("home", { user_mail: user_mail });
@@ -75,7 +124,9 @@ export default function Coupons() {
         </View>
       ) : error ? (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Kuponlar yüklenirken bir hata oluştu.</Text>
+          <Text style={styles.errorText}>
+            Kuponlar yüklenirken bir hata oluştu.
+          </Text>
           <TouchableOpacity
             style={styles.returnButton}
             activeOpacity={0.8}
@@ -97,18 +148,33 @@ export default function Coupons() {
         </View>
       ) : (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Henüz kuponunuz bulunmamaktadır.</Text>
+          <Text style={styles.emptyText}>Aktif kuponunuz bulunamadı.</Text>
           <TouchableOpacity
             style={styles.returnButton}
             activeOpacity={0.8}
             onPress={returnToHomePage}
           >
-            <Text style={styles.returnButtonText}>
-              Kupon Kazanmak İçin Sipariş Ver
-            </Text>
+            <Text style={styles.returnButtonText}>Sipariş Ver</Text>
           </TouchableOpacity>
         </View>
       )}
+
+      {/* Kupon Ekleme Bölümü */}
+      <View style={styles.addCouponContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Kupon Kodu"
+          value={couponCode}
+          onChangeText={setCouponCode}
+        />
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={addCoupon}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addButtonText}>Ekle</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -147,15 +213,9 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     marginTop: 20,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     color: "gray",
-  },
-  button: {
-    backgroundColor: "#007bff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
   },
   buttonText: {
     color: "#fff",
@@ -205,6 +265,35 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "red",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 5,
+  },
+  addCouponContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#ccc",
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginRight: 10,
+  },
+  addButton: {
+    backgroundColor: "#d9440d",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });

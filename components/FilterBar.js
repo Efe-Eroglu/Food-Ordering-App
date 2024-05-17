@@ -14,16 +14,24 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 
-export default function FilterBar({ user_mail, onFilter, onSortByName, onSortByNameDesc, onSortByDeliveryTimeAscending, onSortByDeliveryTimeDescending,onSortByRatingAscending, onSortByRatingDescending }) {
-
+export default function FilterBar({
+  user_mail,
+  onFilter,
+  onSortByName,
+  onSortByNameDesc,
+  onSortByDeliveryTimeAscending,
+  onSortByDeliveryTimeDescending,
+  onSortByRatingAscending,
+  onSortByRatingDescending,
+}) {
   const [deliveryPressed, setDeliveryPressed] = useState(false);
   const [sortPressed, setSortPressed] = useState(false);
   const [sortDescPressed, setSortDescPressed] = useState(false);
   const [filterPanelVisible, setFilterPanelVisible] = useState(false);
   const [radioButton, setRadioButton] = useState(null);
   const [ratingPressed, setRatingPressed] = useState(false);
-  const [artan, setArtan] = useState(false)
-  const [azalan, setAzalan] = useState(false)
+  const [artan, setArtan] = useState(false);
+  const [azalan, setAzalan] = useState(false);
 
   const toggleFilterPanel = () => {
     setFilterPanelVisible(!filterPanelVisible);
@@ -36,51 +44,60 @@ export default function FilterBar({ user_mail, onFilter, onSortByName, onSortByN
   const handleSortByName = () => {
     setRadioButton("A-Z");
     onSortByName();
+    setAzalan(false);
+    setArtan(false);
   };
 
   const handleSortByNameDesc = () => {
     setRadioButton("Z-A");
     onSortByNameDesc();
+    setAzalan(false);
+    setArtan(false);
   };
 
   const handleSortByDeliveryTimeAscending = () => {
     setRadioButton("Teslimat Süresi(Artan)");
     onSortByDeliveryTimeAscending();
+    setAzalan(false);
+    setArtan(false);
   };
 
   const handleSortByDeliveryTimeDescending = () => {
     setRadioButton("Teslimat Süresi(Azalan)");
     onSortByDeliveryTimeDescending();
+    setAzalan(false);
+    setArtan(false);
   };
 
   const handleDelivery = () => {
     setDeliveryPressed(!deliveryPressed);
     onFilter(!deliveryPressed);
+    setRadioButton("");
   };
-  
 
-const handleRatingDesc = () => {
-  setRatingPressed(!ratingPressed);
-  setSortPressed(false);
-  setSortDescPressed(false);
-  onSortByRatingAscending();
-  setAzalan(!azalan)
-  if(artan){
-    setArtan(false)
-  }
-};
+  const handleRatingDesc = () => {
+    setRatingPressed(!ratingPressed);
+    setSortPressed(false);
+    setSortDescPressed(false);
+    onSortByRatingAscending();
+    setAzalan(!azalan);
+    setRadioButton("");
+    if (artan) {
+      setArtan(false);
+    }
+  };
 
-const handleRating = () => {
-  setRatingPressed(!ratingPressed);
-  setSortPressed(false);
-  setSortDescPressed(false);
-  onSortByRatingDescending();
-  setArtan(!artan)
-  if(azalan){
-    setAzalan(false)
-  }
-};
-
+  const handleRating = () => {
+    setRatingPressed(!ratingPressed);
+    setSortPressed(false);
+    setSortDescPressed(false);
+    onSortByRatingDescending();
+    setArtan(!artan);
+    setRadioButton("");
+    if (azalan) {
+      setAzalan(false);
+    }
+  };
 
   return (
     <ScrollView
@@ -165,7 +182,7 @@ const handleRating = () => {
                 }
               />
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.menuItem}
               activeOpacity={0.8}
               onPress={handleSortByDeliveryTimeDescending}
@@ -188,30 +205,18 @@ const handleRating = () => {
       </Modal>
 
       <TouchableOpacity
-        style={[
-          styles.cart,
-          { backgroundColor: artan ? "green" : "white" },
-        ]}
+        style={[styles.cart, { backgroundColor: artan ? "green" : "white" }]}
         activeOpacity={0.8}
         onPress={handleRating}
       >
-        <Octicons
-          name="sort-asc"
-          size={13}
-          color={artan ? "white" : "gray"}
-        />
-        <Text
-          style={[styles.text, { color: artan ? "white" : "black" }]}
-        >
+        <Octicons name="sort-asc" size={13} color={artan ? "white" : "gray"} />
+        <Text style={[styles.text, { color: artan ? "white" : "black" }]}>
           Artan
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[
-          styles.cart,
-          { backgroundColor: azalan ? "green" : "white" },
-        ]}
+        style={[styles.cart, { backgroundColor: azalan ? "green" : "white" }]}
         activeOpacity={0.8}
         onPress={handleRatingDesc}
       >

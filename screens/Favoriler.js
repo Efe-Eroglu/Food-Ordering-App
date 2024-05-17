@@ -39,7 +39,6 @@ export default function Favoriler() {
   const [sortByRatingDesc, setSortByRatingDesc] = useState(false);
   const [restaurants, setRestaurants] = useState([]);
 
-
   const userRef = doc(db, "Kullanicilar", user_mail);
 
   useEffect(() => {
@@ -217,6 +216,20 @@ export default function Favoriler() {
     }
   };
 
+  const sortRestaurantsByDeliveryTimeAscending = () => {
+    const sortedRestaurants = [...favoriRestoranlar].sort(
+      (a, b) => a.delivery - b.delivery
+    );
+    setFavoriRestoranlar(sortedRestaurants);
+  };
+
+  const sortRestaurantsByDeliveryTimeDescending = () => {
+    const sortedRestaurants = [...favoriRestoranlar].sort(
+      (a, b) => b.delivery - a.delivery
+    );
+    setFavoriRestoranlar(sortedRestaurants);
+  };
+
   const sortRestaurantsByName = () => {
     const sortedRestaurants = [...favoriRestoranlar].sort((a, b) => {
       const nameA = a.name.toUpperCase();
@@ -232,36 +245,27 @@ export default function Favoriler() {
     const sortedRestaurants = [...favoriRestoranlar].sort((a, b) => {
       const nameA = a.name.toUpperCase();
       const nameB = b.name.toUpperCase();
-      if (nameA > nameB) return -1; 
-      if (nameA < nameB) return 1; 
+      if (nameA > nameB) return -1;
+      if (nameA < nameB) return 1;
       return 0;
     });
     setFavoriRestoranlar(sortedRestaurants);
   };
 
   const sortRestaurantsByRating = () => {
-    setSortByRating(!sortByRating);
-    setSortByRatingDesc(false);
+    const sortedRestaurants = [...favoriRestoranlar].sort((a, b) => {
+      return b.rating - a.rating;
+    });
+    setFavoriRestoranlar(sortedRestaurants);
   };
 
   const sortRestaurantsByRatingDesc = () => {
-    setSortByRatingDesc(!sortByRatingDesc);
-    setSortByRating(false);
-  };
-
-  const sortRestaurantsByDeliveryTimeAscending = () => {
-    const sortedRestaurants = [...favoriRestoranlar].sort(
-      (a, b) => a.delivery - b.delivery
-    );
+    const sortedRestaurants = [...favoriRestoranlar].sort((a, b) => {
+      return a.rating - b.rating;
+    });
     setFavoriRestoranlar(sortedRestaurants);
   };
 
-  const sortRestaurantsByDeliveryTimeDescending = () => {
-    const sortedRestaurants = [...favoriRestoranlar].sort(
-      (a, b) => b.delivery - a.delivery
-    );
-    setFavoriRestoranlar(sortedRestaurants);
-  };
 
   return (
     <View style={styles.outContainer}>
@@ -293,17 +297,15 @@ export default function Favoriler() {
           </View>
         ) : (
           <FlatList
-            data={
-              fastDeliveryFilter
-                ? favoriRestoranlar.filter(
-                    (restaurant) => restaurant.delivery <= 30
-                  )
-                : favoriRestoranlar
-            }
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-          />
+          data={
+            fastDeliveryRestaurants.length
+              ? fastDeliveryRestaurants
+              : favoriRestoranlar
+          }
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+        />
         )}
         {notification && <Notification />}
       </View>

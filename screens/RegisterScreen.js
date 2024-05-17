@@ -27,10 +27,8 @@ export default function RegisterScreen() {
   const [surname, setSurname] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
-  const [coupon, setCoupon] = useState("");
   const [district, setDistrict] = useState("");
   const [postalCode, setPostalCode] = useState("");
-  const [favourites, setFavourites] = useState("");
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({});
 
