@@ -10,16 +10,14 @@ import {
   View,
 } from "react-native";
 import { Entypo } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import PastOrderBar from "../components/PastOrderBar";
 import { db } from "../firebase";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Animatable } from "react-native-animatable";
 
 export default function PastOrdersScreen() {
   const navigation = useNavigation();
-
   const route = useRoute();
   const { user_mail } = route.params;
 
@@ -32,20 +30,24 @@ export default function PastOrdersScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
+  useEffect(() => {
+    fetchPastOrders();
+  }, []);
+
   const fetchPastOrders = async () => {
     setLoading(true);
     try {
       const pastOrdersRef = collection(db, "Kullanicilar");
       const q = query(pastOrdersRef, where("email", "==", user_mail));
       const querySnapshot = await getDocs(q);
+      const fetchedOrders = [];
       querySnapshot.forEach((doc) => {
-        if (doc.exists()) {
-          const data = doc.data();
-          if (data.pastOrder) {
-            setPastOrders(data.pastOrder.reverse());
-          }
+        const data = doc.data();
+        if (data.pastOrder) {
+          fetchedOrders.push(...data.pastOrder.reverse());
         }
       });
+      setPastOrders(fetchedOrders);
       if (querySnapshot.empty) {
         setError(true);
       }
@@ -56,80 +58,104 @@ export default function PastOrdersScreen() {
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchPastOrders();
-  }, []);
-
   const returnToHomePage = () => {
     navigation.navigate("home", { user_mail: user_mail });
   };
 
-  const renderItem = ({ item }) => {
-    const orderDate = new Date(item.orderDate.seconds * 1000);
+  const groupOrdersByOrderId = (orders) => {
+    const groupedOrders = {};
+    orders.forEach((order) => {
+      if (!groupedOrders[order.orderId]) {
+        groupedOrders[order.orderId] = [];
+      }
+      groupedOrders[order.orderId].push(order);
+    });
+    return groupedOrders;
+  };
+
+  const renderOrderGroup = ({ orderId, orders }) => {
     const now = new Date();
-    const minutesPassed = (now - orderDate) / 1000 / 60;
+    const firstOrderDate = new Date(orders[0].orderDate.seconds * 1000);
+    const minutesPassed = (now - firstOrderDate) / 1000 / 60;
+    const orderStatus = minutesPassed > 30 ? "Teslim Edildi" : "Hazırlanıyor";
+    const statusColor = minutesPassed > 30 ? "green" : "orange";
 
     return (
-      <View style={styles.cardContainer}>
-        <View style={styles.card}>
-          <View style={styles.leftSide}>
-            <Image
-              source={{ uri: item.img }}
-              style={styles.image}
-              resizeMode="stretch"
-            />
-          </View>
-          <View style={styles.rightSide}>
-            <View style={styles.content}>
-              <View style={styles.itemNameContainer}>
-                <Text style={styles.itemName}>
-                  {item.name + " "}
-                  <Text style={styles.quantity}>
-                    {"x" + item.quantity + " "}
-                  </Text>
-                </Text>
-                {/* Eğer sipariş tarihinden 30 dakika geçtiyse yeşil tik göster (Teslim Edildi)*/}
-                {minutesPassed > 30 ? (
-                  <Entypo name="check" size={18} color="green" />
-                ) : (
-                  <MaterialIcons
-                    name="pending"
-                    size={16}
-                    color="orange"
-                    style={styles.icon}
-                  />
-                )}
-              </View>
-              <View style={styles.itemContent}>
-                {item.content.map((contentItem, index) => (
-                  <Text key={index} style={styles.contentText}>
-                    {contentItem + ","}
-                  </Text>
-                ))}
-              </View>
-
-              <Text style={styles.price}>
-                {"Fiyat: " + item.price * item.quantity + " ₺"}
-              </Text>
-              <Text style={styles.orderDate}>
-                Sipariş Tarihi: {orderDate.toLocaleDateString()}
-              </Text>
-            </View>
-          </View>
+      <View style={styles.groupContainer} key={orderId}>
+        <View style={styles.contentHeader}>
+          <Text style={styles.orderId}>Sipariş id: {orderId}</Text>
+          <Text style={[styles.stateText]}>
+            Durum:<Text style={{color:statusColor, fontWeight:"bold", fontSize:11}}> {orderStatus} </Text> 
+          </Text>
         </View>
+        {orders.map((item, index) => {
+          const orderDate = new Date(item.orderDate.seconds * 1000);
+
+          return (
+            <View style={styles.cardContainer} key={index}>
+              <View style={styles.card}>
+                <View style={styles.leftSide}>
+                  <Image
+                    source={{ uri: item.img }}
+                    style={styles.image}
+                    resizeMode="stretch"
+                  />
+                </View>
+                <View style={styles.rightSide}>
+                  <View style={styles.content}>
+                    <View style={styles.itemNameContainer}>
+                      <Text style={styles.itemName}>
+                        {item.name + " "}
+                        <Text style={styles.quantity}>
+                          {"x" + item.quantity + " "}
+                        </Text>
+                      </Text>
+                      {minutesPassed > 30 ? (
+                        <Entypo name="check" size={18} color="green" />
+                      ) : (
+                        <MaterialIcons
+                          name="pending"
+                          size={16}
+                          color="orange"
+                          style={styles.icon}
+                        />
+                      )}
+                    </View>
+                    <View style={styles.itemContent}>
+                      {item.content.map((contentItem, index) => (
+                        <Text key={index} style={styles.contentText}>
+                          {contentItem + ","}
+                        </Text>
+                      ))}
+                    </View>
+                    <Text style={styles.price}>
+                      {"Fiyat: " + item.price * item.quantity + " ₺"}
+                    </Text>
+                    <Text style={styles.orderDate}>
+                      Sipariş Tarihi: {orderDate.toLocaleDateString()}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          );
+        })}
       </View>
     );
   };
 
+  const groupedOrders = groupOrdersByOrderId(pastOrders);
+
   return (
     <View style={styles.outcontainer}>
       <PastOrderBar title={"Geçmiş Siparişler"} user_mail={user_mail} />
-
       <View style={styles.container}>
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#ad3103" />
-            <Text style={styles.loadingText}>Geçmiş Siparişleriniz Yükleniyor...</Text>
+            <Text style={styles.loadingText}>
+              Geçmiş Siparişleriniz Yükleniyor...
+            </Text>
           </View>
         ) : error || pastOrders.length === 0 ? (
           <View style={styles.emptyCartContainer}>
@@ -144,9 +170,12 @@ export default function PastOrdersScreen() {
           </View>
         ) : (
           <FlatList
-            data={pastOrders}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => item.name + index}
+            data={Object.keys(groupedOrders).map((orderId) => ({
+              orderId,
+              orders: groupedOrders[orderId],
+            }))}
+            renderItem={({ item }) => renderOrderGroup(item)}
+            keyExtractor={(item) => item.orderId}
             showsVerticalScrollIndicator={false}
           />
         )}
@@ -156,22 +185,6 @@ export default function PastOrdersScreen() {
 }
 
 const styles = StyleSheet.create({
-  outcontainer: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-  },
-  container: {
-    flex: 1,
-    marginTop: 20,
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-  },
-  cardContainer: {
-    marginBottom: 15,
-  },
   card: {
     width: 350,
     height: 110,
@@ -191,24 +204,9 @@ const styles = StyleSheet.create({
     margin: 10,
     justifyContent: "space-between",
   },
-  button: {
-    borderWidth: 1,
-    borderRadius: 10,
-    width: 100,
-    justifyContent: "center",
-    alignItems: "center",
-    borderColor: "#6e2305",
-    backgroundColor: "rgba(110, 35, 5,0.1)",
-  },
-  buttonText: {
-    textAlign: "center",
-    padding: 1.2,
-  },
-  emptyText: {
-    marginTop: 20,
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "gray",
+  image: {
+    width: "100%",
+    height: "100%",
   },
   content: {
     flex: 1,
@@ -235,17 +233,44 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontWeight: "bold",
   },
+  price: {
+    fontWeight: "bold",
+    fontSize: 12,
+    marginVertical: 4,
+  },
+  quantity: {
+    fontSize: 11,
+    color: "gray",
+  },
+  icon: {
+    marginLeft: 5,
+  },
+  separator: {
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(0, 0, 0, 0.1)",
+    marginVertical: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
+  },
+  emptyText: {
+    marginTop: 20,
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "gray",
+  },
   emptyCartContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 100,
-  },
-  emptyCartText: {
-    fontSize: 16,
-    textAlign: "center",
-    marginBottom: 20,
-    fontFamily: "Roboto",
   },
   returnButton: {
     backgroundColor: "#d9440d",
@@ -259,26 +284,35 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
   },
-  price: {
-    fontWeight: "bold",
-    fontSize: 12,
-    marginVertical: 4,
-  },
-  quantity: {
-    fontSize: 11,
-    color: "gray",
-  },
-  icon: {
-    marginLeft: 5,
-  },
-  loadingContainer: {
+  outcontainer: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: "#fff",
     alignItems: "center",
   },
-  loadingText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginTop: 10,
+  container: {
+    flex: 1,
+    marginTop: 20,
   },
+  orderId: {
+    fontSize: 12,
+    fontWeight: "bold",
+    marginLeft: 5,
+    marginBottom: 2,
+  },
+  groupContainer: {
+    marginBottom: 10,
+    backgroundColor: "rgba(0,0,0,0.1)",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(220,220,220,0.5)",
+  },
+  contentHeader:{
+    flexDirection:"row",
+    justifyContent:"space-between",
+    alignItems:"center"
+  },
+  stateText:{
+    fontSize:10,
+    marginRight:10
+  }
 });

@@ -141,17 +141,18 @@ export default function CartScreen() {
       const docRef = doc(db, "Kullanicilar", user_mail);
       const docSnap = await getDoc(docRef);
       const userData = docSnap.data();
-  
+      const orderId = `siparis_${Date.now()}`;
+
       let pastOrders = userData.pastOrder || [];
   
       cartItems.forEach((item) => {
         pastOrders.push({
+          orderId: orderId, // Benzersiz sipariş numarası
           ...item,
           orderDate: now,
           quantity: item.quantity,
         });
       });
-  
       await updateDoc(docRef, {
         pastOrder: pastOrders,
       });
