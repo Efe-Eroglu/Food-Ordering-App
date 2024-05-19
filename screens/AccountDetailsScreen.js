@@ -8,6 +8,7 @@ import {
   Alert,
   StatusBar,
   ActivityIndicator,
+  ScrollView // ScrollView ekleyin
 } from "react-native";
 import { useFonts } from "expo-font";
 import PastOrderBar from "../components/PastOrderBar";
@@ -22,7 +23,7 @@ export default function AccountDetailsScreen() {
   const [mahalle, setMahalle] = useState("");
   const [postaKodu, setPostaKodu] = useState("");
   const [telefon, setTelefon] = useState("");
-  const [loading, setLoading] = useState(true); // Yeni eklendi
+  const [loading, setLoading] = useState(true);
 
   const route = useRoute();
   const { user_mail } = route.params;
@@ -49,17 +50,17 @@ export default function AccountDetailsScreen() {
         setMahalle(data.adress || "");
         setPostaKodu(data.postalCode || "");
         setTelefon(data.phone || "");
-        setLoading(false); // Veri çekildikten sonra loading'i false yap
+        setLoading(false);
       }
     } catch (error) {
       console.error("Hata:", error);
-      setLoading(false); // Hata olduğunda da loading'i false yap
+      setLoading(false);
     }
   };
 
   const update = async () => {
     try {
-      setLoading(true); // Güncelleme işlemi başladığında loading'i true yap
+      setLoading(true);
       await updateDoc(doc(db, "Kullanicilar", user_mail), {
         adress: mahalle,
         city: sehir,
@@ -67,17 +68,17 @@ export default function AccountDetailsScreen() {
         postalCode: postaKodu,
         phone: telefon,
       });
-      setLoading(false); // Güncelleme işlemi bittiğinde loading'i false yap
+      setLoading(false);
       Alert.alert("Başarılı", "Bilgiler başarıyla güncellendi.");
       console.log("Kullanıcı bilgi güncelledi", user_mail);
     } catch (error) {
       console.error("Hata:", error);
-      setLoading(false); // Hata olduğunda da loading'i false yap
+      setLoading(false);
       Alert.alert("Hata", "Bilgiler güncellenirken bir hata oluştu.");
     }
   };
 
-  if (loading || !fontsLoaded || fontError) { // loading veya font yüklenme durumunda yükleme animasyonunu göster
+  if (loading || !fontsLoaded || fontError) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#ad3103" />
@@ -90,62 +91,64 @@ export default function AccountDetailsScreen() {
     <View style={styles.container}>
       <PastOrderBar title={"Hesap Detayları"} user_mail={user_mail} />
       <Text style={styles.title}>Hesap Detayları</Text>
-      <TextInput
-        style={styles.input}
-        autoCapitalize="sentences"
-        autoCorrect={false}
-        placeholder="Şehir"
-        selectionColor={"#823d0c"}
-        placeholderTextColor={"black"}
-        value={sehir}
-        onChangeText={(text) => setSehir(text)}
-      />
-      <TextInput
-        style={styles.input}
-        autoCapitalize="sentences"
-        autoCorrect={false}
-        selectionColor={"#823d0c"}
-        placeholder="İlçe"
-        placeholderTextColor={"black"}
-        value={ilce}
-        onChangeText={(text) => setIlce(text)}
-      />
-      <TextInput
-        style={styles.input}
-        autoCapitalize="sentences"
-        autoCorrect={false}
-        selectionColor={"#823d0c"}
-        placeholder="Mahalle"
-        placeholderTextColor={"black"}
-        value={mahalle}
-        onChangeText={(text) => setMahalle(text)}
-      />
-      <TextInput
-        style={styles.input}
-        autoCapitalize="none"
-        autoCorrect={false}
-        selectionColor={"#823d0c"}
-        keyboardType="phone-pad"
-        placeholder="Posta Kodu"
-        placeholderTextColor={"black"}
-        value={postaKodu}
-        onChangeText={(text) => setPostaKodu(text)}
-      />
-      <TextInputMask
-        style={styles.input}
-        placeholder="Telefon Numarası"
-        placeholderTextColor={"black"}
-        selectionColor={"#823d0c"}
-        keyboardType="phone-pad"
-        type={"custom"}
-        options={{
-          mask: "0 (999) 999-9999",
-        }}
-        value={telefon}
-        onChangeText={(text) => {
-          setTelefon(text);
-        }}
-      />
+      <ScrollView contentContainerStyle={styles.scrollContainer}> 
+          <TextInput
+            style={styles.input}
+            autoCapitalize="sentences"
+            autoCorrect={false}
+            placeholder="Şehir"
+            selectionColor={"#823d0c"}
+            placeholderTextColor={"black"}
+            value={sehir}
+            onChangeText={(text) => setSehir(text)}
+          />
+          <TextInput
+            style={styles.input}
+            autoCapitalize="sentences"
+            autoCorrect={false}
+            selectionColor={"#823d0c"}
+            placeholder="İlçe"
+            placeholderTextColor={"black"}
+            value={ilce}
+            onChangeText={(text) => setIlce(text)}
+          />
+          <TextInput
+            style={styles.input}
+            autoCapitalize="sentences"
+            autoCorrect={false}
+            selectionColor={"#823d0c"}
+            placeholder="Mahalle"
+            placeholderTextColor={"black"}
+            value={mahalle}
+            onChangeText={(text) => setMahalle(text)}
+          />
+          <TextInput
+            style={styles.input}
+            autoCapitalize="none"
+            autoCorrect={false}
+            selectionColor={"#823d0c"}
+            keyboardType="phone-pad"
+            placeholder="Posta Kodu"
+            placeholderTextColor={"black"}
+            value={postaKodu}
+            onChangeText={(text) => setPostaKodu(text)}
+          />
+          <TextInputMask
+            style={styles.input}
+            placeholder="Telefon Numarası"
+            placeholderTextColor={"black"}
+            selectionColor={"#823d0c"}
+            keyboardType="phone-pad"
+            type={"custom"}
+            options={{
+              mask: "0 (999) 999-9999",
+            }}
+            value={telefon}
+            onChangeText={(text) => {
+              setTelefon(text);
+            }}
+          />
+      </ScrollView>
 
       <TouchableOpacity
         activeOpacity={0.8}
@@ -183,6 +186,7 @@ const styles = StyleSheet.create({
     width: 200,
     borderRadius: 50,
     marginTop: "10%",
+    marginBottom:70
   },
   buttonText: {
     color: "white",
@@ -198,5 +202,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 10,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    alignItems: "center",
   },
 });

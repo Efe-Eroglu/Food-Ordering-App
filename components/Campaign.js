@@ -1,4 +1,11 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { doc, onSnapshot } from "firebase/firestore";
@@ -29,7 +36,7 @@ export default function Campaign({ email }) {
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={styles.box1}
+        style={[styles.box1, styles.box]}
         activeOpacity={1}
         onPress={() => navigation.navigate("favoriler", { user_mail: email })}
       >
@@ -49,7 +56,7 @@ export default function Campaign({ email }) {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.box2}
+        style={[styles.box2, styles.box]}
         activeOpacity={1}
         onPress={() => navigation.navigate("restoranlar", { user_mail: email })}
       >
@@ -67,7 +74,7 @@ export default function Campaign({ email }) {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.box2}
+        style={[styles.box2, styles.box]}
         activeOpacity={1}
         onPress={() => navigation.navigate("gelAl", { user_mail: email })}
       >
@@ -95,22 +102,31 @@ const styles = StyleSheet.create({
     flex: 6,
     backgroundColor: "#fff",
   },
-  box1: {
-    position: "absolute",
-    right: 20,
-    top: 20,
-    width: "40%",
-    height: "90%",
-    backgroundColor: "#fff",
+
+  box: {
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
     elevation: 10,
     overflow: "hidden",
+    width: "45%",
+    aspectRatio: 1,
+  },
+  box1: {
+    position: "absolute",
+    right: 20,
+    top: 20,
+    width: "38%",
+    height: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    elevation: 10,
+    overflow: "hidden",
+    aspectRatio: 1,
   },
   box2: {
     width: "45%",
-    height: "40%",
+    height: "37%",
     backgroundColor: "#fff",
     marginVertical: 20,
     marginHorizontal: 20,
@@ -120,6 +136,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     overflow: "hidden",
   },
+  
   imageContainerRight: {
     marginTop: 100,
     width: "100%",
@@ -161,6 +178,6 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 20,
     fontSize: 14,
-    fontWeight:"bold"
+    fontWeight: "bold",
   },
 });

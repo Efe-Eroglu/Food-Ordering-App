@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -45,7 +46,8 @@ export default function Bar({ email }) {
   
 
   return (
-    <KeyboardAvoidingView behavior="height">
+    <KeyboardAvoidingView  behavior={Platform.OS === "ios" ? "padding" : "height"}
+    keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
       <View style={styles.container}>
         <View style={styles.addresContainer}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
